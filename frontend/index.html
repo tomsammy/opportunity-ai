@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpportunityIQ | AI Intelligence Platform for Jobs, Scholarships & News</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <div class="brand">
+        <div class="brand-icon">IQ</div>
+        <div class="brand-title">OpportunityIQ <span style="font-size:12px; color:var(--accent-emerald); border:1px solid rgba(16,185,129,0.3); padding:2px 8px; border-radius:100px; margin-left:6px;">LIVE RAG</span></div>
+      </div>
+      <div class="nav-actions">
+        <button class="btn btn-secondary" id="btn-crawl" onclick="triggerCrawl()">
+          <span>🔄 Sync & Crawl Web</span>
+        </button>
+        <button class="btn btn-primary" onclick="toggleChatDrawer()">
+          <span>✨ AI Opportunity Copilot</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <main class="container">
+    <section class="hero">
+      <div class="hero-badge">
+        <span>⚡ Real-Time Web Intelligence Engine</span>
+      </div>
+      <h1 class="hero-title">
+        Discover Fresh Scholarships, Jobs &<br><span>High-Value Opportunities First</span>
+      </h1>
+      <p class="hero-sub">
+        Continuous AI web crawler extracting verified scholarships, grants, remote tech roles, and industry news directly into a single RAG-powered knowledge directory.
+      </p>
+
+      <!-- Search Input -->
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="search-input" placeholder="Search by keyword, country, degree level, or technology (e.g. Germany, PhD, Python, Remote)..." onkeyup="handleSearch()">
+      </div>
+
+      <!-- Live Counters -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-total">0</div>
+          <div class="stat-label">Total Indexed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-scholarships" style="color:#a78bfa;">0</div>
+          <div class="stat-label">Scholarships & Grants</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-jobs" style="color:#34d399;">0</div>
+          <div class="stat-label">Remote & Tech Jobs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-news" style="color:#60a5fa;">0</div>
+          <div class="stat-label">AI & Tech News</div>
+        </div>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="category-tabs">
+        <button class="tab-btn active" onclick="filterCategory('All', this)">🌐 All Directory</button>
+        <button class="tab-btn" onclick="filterCategory('Scholarship', this)">🎓 Scholarships</button>
+        <button class="tab-btn" onclick="filterCategory('Job', this)">💼 Jobs & Careers</button>
+        <button class="tab-btn" onclick="filterCategory('Grant', this)">🔬 Fellowships & Grants</button>
+        <button class="tab-btn" onclick="filterCategory('News', this)">📰 Tech & Market News</button>
+      </div>
+    </section>
+
+    <!-- Opportunities Grid -->
+    <section>
+      <div class="opportunities-grid" id="grid-container">
+        <!-- Dynamic Cards Inserted Here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Slide-Over AI Chatbot Drawer -->
+  <aside class="chat-drawer" id="chat-drawer">
+    <div class="chat-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;">🤖</span>
+        <div>
+          <div style="font-weight:700; font-size:16px;">OpportunityIQ RAG Assistant</div>
+          <div style="font-size:12px; color:var(--text-subtle);">Ask anything about available listings</div>
+        </div>
+      </div>
+      <button onclick="toggleChatDrawer()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
+    </div>
+
+    <div class="chat-body" id="chat-body">
+      <div class="chat-msg msg-bot">
+        👋 Hi! I am your AI Opportunity Copilot. I scan through all extracted web opportunities in real time.<br><br>
+        Try asking me:<br>
+        • <i>"What fully funded scholarships are available in Germany?"</i><br>
+        • <i>"Find remote Python software engineer jobs."</i><br>
+        • <i>"What are the eligibility rules for Gates Cambridge?"</i>
+      </div>
+    </div>
+
+    <div class="chat-footer">
+      <input type="text" id="chat-input" class="chat-input" placeholder="Ask a question..." onkeypress="handleChatKeyPress(event)">
+      <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
+    </div>
+  </aside>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
