@@ -213,6 +213,19 @@ def run_crawling_cycle() -> list:
         hot_items = fetch_rss_feed(feed_url, source_name, default_cat)
         crawled_data.extend(hot_items)
 
+    # 6. Fetch Japa, Visa & Relocation Pathways News (UK Visas, Canada CIC, StudyGreen, Reddit r/IWantOut)
+    logging.info("Crawling Japa & Relocation News (UK Visas, Canada CIC, StudyGreen, Reddit r/IWantOut)...")
+    japa_sources = [
+        ("https://www.gov.uk/government/organisations/uk-visas-and-immigration.atom", "UK Visas & Immigration", "News"),
+        ("https://www.cicnews.com/feed", "Canada CIC Immigration News", "News"),
+        ("https://studygreen.info/feed/", "StudyGreen (Japa Pathways)", "News"),
+        ("https://www.reddit.com/r/IWantOut/.rss", "Reddit r/IWantOut", "News")
+    ]
+    
+    for feed_url, source_name, default_cat in japa_sources:
+        japa_items = fetch_rss_feed(feed_url, source_name, default_cat)
+        crawled_data.extend(japa_items)
+
     # Deduplicate items by title
     seen_titles = set()
     unique_items = []
