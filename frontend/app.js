@@ -109,6 +109,11 @@ function filterCategory(category, element) {
   fetchOpportunities();
 }
 
+function setSearch(term) {
+  document.getElementById('search-input').value = term;
+  fetchOpportunities();
+}
+
 let searchTimeout;
 function handleSearch() {
   clearTimeout(searchTimeout);

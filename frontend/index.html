@@ -42,10 +42,17 @@
         Continuous AI web crawler extracting verified scholarships, grants, remote tech roles, and industry news directly into a single RAG-powered knowledge directory.
       </p>
 
-      <!-- Search Input -->
+      <!-- Search Input & Quick Chips -->
       <div class="search-container">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" class="search-input" placeholder="Search by keyword, country, degree level, or technology (e.g. Germany, PhD, Python, Remote)..." onkeyup="handleSearch()">
+        <input type="text" id="search-input" class="search-input" placeholder="Search by keyword, country, degree level, or visa pathway (e.g. Canada, UK Visa, Germany, PhD, Remote)..." onkeyup="handleSearch()">
+        <div style="display:flex; justify-content:center; gap:8px; margin-top:12px; flex-wrap:wrap;">
+          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Japa')">✈️ Japa & Visa News</span>
+          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Canada')">🇨🇦 Canada Pathways</span>
+          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('UK')">🇬🇧 UK Visas</span>
+          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Scholarship')">🎓 Scholarships</span>
+          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Remote')">💼 Remote Roles</span>
+        </div>
       </div>
 
       <!-- Live Counters -->
