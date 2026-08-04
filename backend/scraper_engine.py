@@ -125,24 +125,62 @@ def fetch_remotive_jobs() -> list:
         items.append(meta)
     return items
 
+def fetch_arbeitnow_jobs() -> list:
+    """Fetches live remote tech jobs from Arbeitnow API."""
+    items = []
+    data = fetch_json_api("https://www.arbeitnow.com/api/job-board-api")
+    jobs = data.get("data", [])
+    for job in jobs[:15]:
+        title = job.get("title", "")
+        company = job.get("company_name", "Tech Company")
+        salary = "Competitive Compensation"
+        apply_url = job.get("url") or "#"
+        desc = job.get("description") or ""
+
+        meta = extract_metadata_from_content(f"{title} at {company}", desc, f"Arbeitnow ({company})", "Job")
+        meta["id"] = f"arbeitnow-{abs(hash(apply_url))}"
+        meta["funding_amount"] = salary
+        meta["apply_url"] = apply_url
+        meta["published_at"] = datetime.now().strftime("%Y-%m-%d")
+        meta["region"] = "Remote / EU / Global"
+        items.append(meta)
+    return items
+
 def run_crawling_cycle() -> list:
     """Runs a complete multi-source live web crawling cycle."""
     crawled_data = list(INITIAL_SEED_OPPORTUNITIES)
     
-    # 1. Fetch Live Remote Jobs (Remotive API)
-    logging.info("Crawling Remotive Jobs API...")
+    # 1. Fetch Live Remote Jobs (Remotive API + Arbeitnow API)
+    logging.info("Crawling Remotive & Arbeitnow Job APIs...")
     remotive_items = fetch_remotive_jobs()
     crawled_data.extend(remotive_items)
 
-    # 2. Fetch Live International Scholarships & Grants RSS
-    logging.info("Crawling Opportunities For Africans & International Scholarships Feed...")
-    ofa_items = fetch_rss_feed("https://www.opportunitiesforafricans.com/feed/", "Opportunities For Africans", "Scholarship")
-    crawled_data.extend(ofa_items)
+    arbeitnow_items = fetch_arbeitnow_jobs()
+    crawled_data.extend(arbeitnow_items)
 
-    # 3. Fetch WeWorkRemotely RSS
-    logging.info("Crawling WeWorkRemotely Feed...")
-    wwr_items = fetch_rss_feed("https://weworkremotely.com/remote-jobs.rss", "WeWorkRemotely", "Job")
-    crawled_data.extend(wwr_items)
+    # 2. Fetch Job Marketplaces & Discussion Boards (Hacker News Jobs, Authentic Jobs, WeWorkRemotely)
+    logging.info("Crawling Job Marketplaces (Hacker News Jobs, Authentic Jobs, WeWorkRemotely)...")
+    job_marketplaces = [
+        ("https://hnrss.org/jobs", "Hacker News Jobs"),
+        ("https://authenticjobs.com/feed/", "Authentic Jobs"),
+        ("https://weworkremotely.com/remote-jobs.rss", "WeWorkRemotely")
+    ]
+    for url, source in job_marketplaces:
+        j_items = fetch_rss_feed(url, source, "Job")
+        crawled_data.extend(j_items)
+
+    # 3. Fetch Research Grants & Fellowships (NSF Grants, FundsForNGOs, OpportunityDesk, OFA)
+    logging.info("Crawling Research Grants & Fellowships (NSF, FundsForNGOs, OpportunityDesk, OFA)...")
+    grant_sources = [
+        ("https://www.nsf.gov/rss/rss_www_funding.xml", "US National Science Foundation", "Grant"),
+        ("https://www.fundsforngos.org/feed/", "FundsForNGOs", "Grant"),
+        ("https://opportunitydesk.org/feed/", "OpportunityDesk", "Grant"),
+        ("https://www.opportunitiesforafricans.com/feed/", "Opportunities For Africans", "Scholarship"),
+        ("https://scholarships360.org/feed/", "Scholarships360", "Scholarship")
+    ]
+    for url, source, cat in grant_sources:
+        g_items = fetch_rss_feed(url, source, cat)
+        crawled_data.extend(g_items)
 
     # 4. Fetch Global Credible News Feeds (BBC, NYTimes, Wired, MIT Tech Review, Guardian, TechCrunch)
     logging.info("Crawling Credible Global News Feeds...")
