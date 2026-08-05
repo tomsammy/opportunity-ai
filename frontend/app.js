@@ -131,14 +131,31 @@ async function triggerCrawl() {
   try {
     const res = await fetch('/api/crawl', { method: 'POST' });
     const result = await res.json();
-    alert(result.message || "Crawl complete!");
+    showNotification("Sync Complete", result.message || "Crawl cycle completed successfully.");
     fetchStats();
     fetchOpportunities();
   } catch (err) {
-    alert("Error triggering web crawl.");
+    showNotification("Sync Error", "Failed to connect to the crawler service.", true);
   } finally {
     btn.innerHTML = originalText;
     btn.disabled = false;
+  }
+}
+
+/* Modal Helper Functions */
+function showNotification(title, message, isError = false) {
+  const modal = document.getElementById('notification-modal');
+  if (!modal) return;
+  document.getElementById('modal-icon').innerText = isError ? '⚠️' : '🎉';
+  document.getElementById('modal-title').innerText = title;
+  document.getElementById('modal-message').innerText = message;
+  modal.classList.add('open');
+}
+
+function closeNotificationModal() {
+  const modal = document.getElementById('notification-modal');
+  if (modal) {
+    modal.classList.remove('open');
   }
 }
 
