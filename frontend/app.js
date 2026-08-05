@@ -1,3 +1,8 @@
+// Override native browser alert with dark glassmorphism modal
+window.alert = function(message) {
+  showNotification("System Notification", message);
+};
+
 let currentCategory = 'All';
 let opportunitiesData = [];
 
