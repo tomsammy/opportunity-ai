@@ -97,9 +97,14 @@ function renderGrid(items) {
 
           <div class="card-footer">
             <span class="source-badge">📍 ${item.source_name || 'Verified Web'}</span>
-            <a href="${item.apply_url || '#'}" target="_blank" class="btn btn-primary" style="padding:6px 14px; font-size:13px; text-decoration:none;">
-              ${buttonText}
-            </a>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="evaluateItemFit('${item.id}')">
+                🎯 Evaluate Fit
+              </button>
+              <a href="${item.apply_url || '#'}" target="_blank" class="btn btn-primary" style="padding:6px 14px; font-size:13px; text-decoration:none;">
+                ${buttonText}
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -217,4 +222,106 @@ function formatMarkdown(text) {
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/\n/g, '<br>');
+}
+
+/* Candidate Profile Functions */
+async function openProfileModal() {
+  const modal = document.getElementById('profile-modal');
+  modal.classList.add('open');
+  try {
+    const res = await fetch('/api/profile');
+    const result = await res.json();
+    const p = result.profile || {};
+    document.getElementById('prof-name').value = p.name || '';
+    document.getElementById('prof-skills').value = (p.skills || []).join(', ');
+    document.getElementById('prof-roles').value = (p.target_roles || []).join(', ');
+    document.getElementById('prof-edu').value = p.education || '';
+    document.getElementById('prof-exp').value = p.experience_summary || '';
+  } catch (err) {
+    console.error("Error loading profile:", err);
+  }
+}
+
+function closeProfileModal() {
+  document.getElementById('profile-modal').classList.remove('open');
+}
+
+async function saveProfile() {
+  const payload = {
+    name: document.getElementById('prof-name').value,
+    skills: document.getElementById('prof-skills').value,
+    target_roles: document.getElementById('prof-roles').value,
+    education: document.getElementById('prof-edu').value,
+    experience_summary: document.getElementById('prof-exp').value
+  };
+
+  try {
+    await fetch('/api/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    closeProfileModal();
+    showNotification("Profile Saved", "Your candidate profile has been updated successfully.");
+  } catch (err) {
+    showNotification("Profile Error", "Failed to save candidate profile.", true);
+  }
+}
+
+/* AI Fit Score & Cover Letter Functions */
+async function evaluateItemFit(itemId) {
+  const fitModal = document.getElementById('fit-modal');
+  const contentDiv = document.getElementById('fit-analysis-content');
+  const letterArea = document.getElementById('cover-letter-text');
+  
+  contentDiv.innerHTML = '⏳ Calculating match score and evaluating fit...';
+  letterArea.value = '⏳ Generating tailored cover letter...';
+  fitModal.classList.add('open');
+
+  try {
+    const [evalRes, letterRes] = await Promise.all([
+      fetch('/api/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item_id: itemId })
+      }),
+      fetch('/api/generate-letter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item_id: itemId })
+      })
+    ]);
+
+    const evalData = await evalRes.json();
+    const letterData = await letterRes.json();
+
+    const ev = evalData.evaluation || {};
+    const score = ev.fit_score || 50;
+
+    document.getElementById('fit-score-badge').innerText = `${score}%`;
+    document.getElementById('fit-score-badge').style.color = score >= 70 ? 'var(--accent-emerald)' : score >= 50 ? 'var(--accent-amber)' : '#ef4444';
+
+    let html = `
+      <div style="font-weight:700; color:#fff; font-size:14px; margin-bottom:8px;">${ev.recommendation || ''}</div>
+      <div style="margin-bottom:8px;"><strong style="color:var(--accent-emerald);">✅ Match Strengths:</strong><br>• ${ev.pros ? ev.pros.join('<br>• ') : 'Good baseline match.'}</div>
+      <div><strong style="color:var(--accent-amber);">⚠️ Focus Areas:</strong><br>• ${ev.cons ? ev.cons.join('<br>• ') : 'Check posting details.'}</div>
+    `;
+    contentDiv.innerHTML = html;
+    letterArea.value = letterData.cover_letter || 'No letter generated.';
+
+  } catch (err) {
+    contentDiv.innerHTML = 'Failed to evaluate fit score.';
+    letterArea.value = 'Failed to generate cover letter.';
+  }
+}
+
+function closeFitModal() {
+  document.getElementById('fit-modal').classList.remove('open');
+}
+
+function copyCoverLetter() {
+  const text = document.getElementById('cover-letter-text');
+  text.select();
+  document.execCommand('copy');
+  showNotification("Copied!", "Cover letter copied to clipboard.");
 }

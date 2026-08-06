@@ -19,6 +19,9 @@
         <div class="brand-title">OpportunityIQ <span style="font-size:12px; color:var(--accent-emerald); border:1px solid rgba(16,185,129,0.3); padding:2px 8px; border-radius:100px; margin-left:6px;">LIVE RAG</span></div>
       </div>
       <div class="nav-actions">
+        <button class="btn btn-secondary" onclick="openProfileModal()">
+          <span>📄 Candidate Profile</span>
+        </button>
         <button class="btn btn-secondary" id="btn-crawl" onclick="triggerCrawl()">
           <span>🔄 Sync & Crawl Web</span>
         </button>
@@ -122,6 +125,77 @@
     </div>
   </aside>
 
+  <!-- Candidate Profile Modal Overlay -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width:540px; text-align:left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 class="modal-title" style="margin:0;">👤 My Candidate Profile</h3>
+        <button onclick="closeProfileModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
+      </div>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">
+        Configure your target skills and background so the AI Job Search engine can evaluate your fit score and generate custom cover letters.
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <label style="font-size:12px; font-weight:600; color:var(--text-subtle);">Full Name</label>
+          <input type="text" id="prof-name" class="chat-input" style="width:100%; margin-top:4px;" placeholder="John Doe">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:600; color:var(--text-subtle);">Technical Skills (comma-separated)</label>
+          <input type="text" id="prof-skills" class="chat-input" style="width:100%; margin-top:4px;" placeholder="Python, JavaScript, React, FastAPI, SQL, Machine Learning">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:600; color:var(--text-subtle);">Target Job Roles / Focus (comma-separated)</label>
+          <input type="text" id="prof-roles" class="chat-input" style="width:100%; margin-top:4px;" placeholder="Software Engineer, Full Stack, Data Analyst, AI Engineer">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:600; color:var(--text-subtle);">Education Background</label>
+          <input type="text" id="prof-edu" class="chat-input" style="width:100%; margin-top:4px;" placeholder="B.Sc Computer Science / Software Engineering">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:600; color:var(--text-subtle);">Resume / Experience Summary</label>
+          <textarea id="prof-exp" class="chat-input" style="width:100%; height:80px; margin-top:4px; font-family:inherit; resize:vertical;" placeholder="Briefly describe your experience and projects..."></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:24px;">
+        <button class="btn btn-secondary" style="flex:1; justify-content:center;" onclick="closeProfileModal()">Cancel</button>
+        <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="saveProfile()">Save Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Fit & Cover Letter Modal Overlay -->
+  <div id="fit-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width:580px; text-align:left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div id="fit-score-badge" style="font-size:24px; font-weight:800; background:rgba(16,185,129,0.15); color:var(--accent-emerald); border:1px solid rgba(16,185,129,0.3); padding:6px 14px; border-radius:12px;">85%</div>
+          <div>
+            <h3 class="modal-title" style="margin:0; font-size:18px;" id="fit-modal-title">AI Job Fit Evaluation</h3>
+            <div style="font-size:12px; color:var(--text-subtle);" id="fit-modal-subtitle">Opportunity IQ Match Rating</div>
+          </div>
+        </div>
+        <button onclick="closeFitModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
+      </div>
+
+      <div style="background:rgba(0,0,0,0.25); border-radius:12px; padding:16px; margin-bottom:16px; font-size:13px; line-height:1.6;" id="fit-analysis-content">
+        <!-- Fit Score Analysis Content -->
+      </div>
+
+      <div style="border-top:1px solid var(--border-card); padding-top:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-weight:700; font-size:14px; color:#fff;">📝 AI Generated Cover Letter</span>
+          <button class="btn btn-secondary" style="padding:4px 10px; font-size:12px;" onclick="copyCoverLetter()">📋 Copy Letter</button>
+        </div>
+        <textarea id="cover-letter-text" class="chat-input" style="width:100%; height:160px; font-family:monospace; font-size:12px; line-height:1.45; resize:vertical; background:rgba(0,0,0,0.4);" readonly></textarea>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%; margin-top:20px; justify-content:center;" onclick="closeFitModal()">Close</button>
+    </div>
+  </div>
+
   <!-- Custom Notification Modal Overlay -->
   <div id="notification-modal" class="modal-overlay">
     <div class="modal-card">
@@ -132,6 +206,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=3"></script>
+  <script src="/static/app.js?v=4"></script>
 </body>
 </html>

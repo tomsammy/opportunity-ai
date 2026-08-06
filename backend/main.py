@@ -134,6 +134,50 @@ def trigger_crawl():
         "count": len(opportunities_cache)
     }
 
+from backend.job_evaluator import get_user_profile, update_user_profile, evaluate_job_fit, generate_cover_letter
+
+class ProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    skills: Optional[str] = None
+    target_roles: Optional[str] = None
+    experience_summary: Optional[str] = None
+    education: Optional[str] = None
+
+class ItemIdRequest(BaseModel):
+    item_id: str
+
+@app.get("/api/profile")
+def get_profile_endpoint():
+    """Gets candidate profile settings."""
+    return {"status": "success", "profile": get_user_profile()}
+
+@app.post("/api/profile")
+def update_profile_endpoint(payload: ProfileUpdate):
+    """Updates candidate profile settings."""
+    data = {k: v for k, v in payload.dict().items() if v is not None}
+    updated = update_user_profile(data)
+    return {"status": "success", "profile": updated}
+
+@app.post("/api/evaluate")
+def evaluate_fit_endpoint(payload: ItemIdRequest):
+    """Evaluates candidate fit score (0-100%) against a posting."""
+    target_item = next((item for item in opportunities_cache if item.get("id") == payload.item_id), None)
+    if not target_item:
+        raise HTTPException(status_code=44, detail="Item not found")
+
+    result = evaluate_job_fit(target_item)
+    return {"status": "success", "evaluation": result}
+
+@app.post("/api/generate-letter")
+def generate_cover_letter_endpoint(payload: ItemIdRequest):
+    """Generates customized cover letter draft for a posting."""
+    target_item = next((item for item in opportunities_cache if item.get("id") == payload.item_id), None)
+    if not target_item:
+        raise HTTPException(status_code=44, detail="Item not found")
+
+    letter = generate_cover_letter(target_item)
+    return {"status": "success", "cover_letter": letter}
+
 # Mount static frontend directory
 frontend_dir = os.path.join(BASE_DIR, "frontend")
 if os.path.exists(frontend_dir):
