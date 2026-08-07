@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpportunityIQ | AI Intelligence Platform for Jobs, Scholarships & News</title>
-  <link rel="stylesheet" href="/static/styles.css?v=9">
+  <link rel="stylesheet" href="/static/styles.css?v=10">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
     </div>
   </header>
 
-  <!-- Hero Banner (PRD Alignment) -->
+  <!-- Ultra-Clean Hero Landing Section -->
   <main class="container">
     <section class="hero">
       <div class="hero-badge">
@@ -48,33 +48,23 @@
         Upload your resume once. Our AI continuously finds jobs, grants, scholarships, fellowships, tenders, accelerators, and funding opportunities tailored to your skills.
       </p>
 
-      <!-- Search Input & Quick Chips -->
+      <!-- Search Input & Clean Single Row Chips -->
       <div class="search-container">
         <span class="search-icon">🔍</span>
         <input type="text" id="search-input" class="search-input" placeholder="Search by keyword, country, degree level, or tender (e.g. Canada, UK Visa, Germany, PhD, Remote, Startup)..." onkeyup="handleSearch()">
-        <div style="display:flex; justify-content:center; gap:8px; margin-top:12px; flex-wrap:wrap;">
-          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Scout')">🔥 Scout Stealth & Rare</span>
-          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Japa')">✈️ Japa & Visa News</span>
-          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Canada')">🇨🇦 Canada Pathways</span>
-          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('UK')">🇬🇧 UK Visas</span>
-          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Scholarship')">🎓 Scholarships</span>
-          <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Remote')">💼 Remote Roles</span>
+        <div style="display:flex; justify-content:center; gap:8px; margin-top:14px; flex-wrap:wrap;">
+          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Scout')">🔥 Stealth & Rare</span>
+          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Japa')">✈️ Japa & Visas</span>
+          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Canada')">🇨🇦 Canada</span>
+          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('UK')">🇬🇧 UK Visas</span>
+          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Scholarship')">🎓 Scholarships</span>
+          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Remote')">💼 Remote Roles</span>
         </div>
       </div>
+    </section>
 
-      <!-- PRD Target Audience Segment Tabs -->
-      <div style="margin-bottom:24px; text-align:center;">
-        <div style="font-size:12px; font-weight:700; color:var(--text-subtle); text-transform:uppercase; margin-bottom:10px;">Tailored For Your Audience:</div>
-        <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
-          <button class="tab-btn active" onclick="filterSegment('All', this)">🌐 All Profiles</button>
-          <button class="tab-btn" onclick="filterSegment('Student', this)">🎓 Students</button>
-          <button class="tab-btn" onclick="filterSegment('JobSeeker', this)">💼 Job Seekers</button>
-          <button class="tab-btn" onclick="filterSegment('Entrepreneur', this)">🚀 Entrepreneurs</button>
-          <button class="tab-btn" onclick="filterSegment('Business', this)">🏛️ Businesses (Tenders)</button>
-          <button class="tab-btn" onclick="filterSegment('NGO', this)">🌐 NGOs (Grants)</button>
-        </div>
-      </div>
-
+    <!-- Live Directory Section (Clean Stats & Filter Tabs) -->
+    <section style="margin-top:20px;">
       <!-- Live Counters -->
       <div class="stats-grid">
         <div class="stat-card">
@@ -95,8 +85,20 @@
         </div>
       </div>
 
-      <!-- 8 PRD Category Filter Tabs -->
-      <div class="category-tabs">
+      <!-- Target Audience Tabs -->
+      <div style="margin-bottom:16px; text-align:center;">
+        <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+          <button class="tab-btn active" onclick="filterSegment('All', this)">🌐 All Profiles</button>
+          <button class="tab-btn" onclick="filterSegment('Student', this)">🎓 Students</button>
+          <button class="tab-btn" onclick="filterSegment('JobSeeker', this)">💼 Job Seekers</button>
+          <button class="tab-btn" onclick="filterSegment('Entrepreneur', this)">🚀 Entrepreneurs</button>
+          <button class="tab-btn" onclick="filterSegment('Business', this)">🏛️ Businesses (Tenders)</button>
+          <button class="tab-btn" onclick="filterSegment('NGO', this)">🌐 NGOs (Grants)</button>
+        </div>
+      </div>
+
+      <!-- 8 Category Filter Tabs -->
+      <div class="category-tabs" style="margin-bottom:28px;">
         <button class="tab-btn active" onclick="filterCategory('All', this)">🌐 All Categories</button>
         <button class="tab-btn" onclick="filterCategory('Job', this)">💼 Jobs</button>
         <button class="tab-btn" onclick="filterCategory('Scholarship', this)">🎓 Scholarships</button>
@@ -107,13 +109,12 @@
         <button class="tab-btn" onclick="filterCategory('Tender', this)">🏛️ Tenders</button>
         <button class="tab-btn" onclick="filterCategory('Internship', this)">💼 Internships</button>
       </div>
-    </section>
 
-    <!-- Opportunities Grid -->
-    <section>
+      <!-- Opportunities Grid -->
       <div class="opportunities-grid" id="grid-container">
         <!-- Dynamic Cards Inserted Here -->
       </div>
+    </section>
     </section>
   </main>
 
@@ -254,6 +255,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=9"></script>
+  <script src="/static/app.js?v=10"></script>
 </body>
 </html>
