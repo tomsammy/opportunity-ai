@@ -4,6 +4,7 @@ import urllib.request
 import logging
 from datetime import datetime
 from backend.extractor import extract_metadata_from_content
+from backend.scout_engine import fetch_scout_rare_opportunities
 
 logging.basicConfig(level=logging.INFO)
 
@@ -205,6 +206,11 @@ def fetch_arbeitnow_jobs() -> list:
 def run_crawling_cycle() -> list:
     """Runs a complete multi-source live web crawling cycle."""
     crawled_data = list(INITIAL_SEED_OPPORTUNITIES)
+    
+    # 0. Fetch Scout Rare & Stealth Opportunities (Direct Founder Roles & Micro-Grants)
+    logging.info("Scouting Rare & Stealth Opportunities (Scout Engine)...")
+    scout_items = fetch_scout_rare_opportunities()
+    crawled_data.extend(scout_items)
     
     # 1. Fetch Live Remote Jobs (Remotive API + Arbeitnow API)
     logging.info("Crawling Remotive & Arbeitnow Job APIs...")
