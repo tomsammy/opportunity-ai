@@ -30,17 +30,23 @@ def extract_opportunity_from_yt_description(title: str, description: str, channe
     apply_urls = [u for u in urls if "youtube.com" not in u and "youtu.be" not in u]
     apply_url = apply_urls[0] if apply_urls else (urls[0] if urls else "https://youtube.com")
 
-    # Determine category
+    # Determine category explicitly for Fellowships, Accelerators, Competitions, Internships
     title_lower = title.lower()
+    desc_lower = description.lower()
     category = "Job"
-    if "scholarship" in title_lower or "master" in title_lower or "phd" in title_lower:
-        category = "Scholarship"
-    elif "grant" in title_lower or "funding" in title_lower or "fellowship" in title_lower:
-        category = "Grant"
-    elif "accelerator" in title_lower or "startup" in title_lower or "y combinator" in title_lower:
+
+    if "fellowship" in title_lower or "fellow" in title_lower or "postdoc" in title_lower:
+        category = "Fellowship"
+    elif "accelerator" in title_lower or "startup" in title_lower or "y combinator" in title_lower or "techstars" in title_lower:
         category = "Accelerator"
-    elif "tender" in title_lower or "procurement" in title_lower:
-        category = "Tender"
+    elif "competition" in title_lower or "hackathon" in title_lower or "challenge" in title_lower or "prize" in title_lower:
+        category = "Competition"
+    elif "internship" in title_lower or "intern" in title_lower or "co-op" in title_lower or "summer student" in title_lower:
+        category = "Internship"
+    elif "scholarship" in title_lower or "master" in title_lower or "phd" in title_lower:
+        category = "Scholarship"
+    elif "grant" in title_lower or "funding" in title_lower:
+        category = "Grant"
 
     return {
         "id": f"yt-{abs(hash(title))}",
@@ -55,7 +61,7 @@ def extract_opportunity_from_yt_description(title: str, description: str, channe
         "region": "Global / Remote",
         "summary": description[:220] + "..." if len(description) > 220 else description,
         "contact_email": emails[0] if emails else None,
-        "scout_score": 92,
+        "scout_score": 94,
         "is_youtube": True
     }
 
