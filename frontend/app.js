@@ -95,13 +95,15 @@ function renderGrid(items) {
         <div>
           ${detailsHTML}
 
-          <div class="card-footer">
-            <span class="source-badge">📍 ${item.source_name || 'Verified Web'}</span>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="evaluateItemFit('${item.id}')">
+          <div class="card-footer" style="display:flex; flex-direction:column; gap:12px; align-items:stretch;">
+            <div class="source-badge" style="font-size:12px; color:var(--text-subtle); font-weight:500;">
+              📍 ${item.source_name || 'Verified Web'}
+            </div>
+            <div style="display:flex; gap:10px; width:100%;">
+              <button class="btn btn-secondary" style="flex:1; justify-content:center; padding:10px; font-size:13px;" onclick="evaluateItemFit('${item.id}')">
                 🎯 Evaluate Fit
               </button>
-              <a href="${item.apply_url || '#'}" target="_blank" class="btn btn-primary" style="padding:6px 14px; font-size:13px; text-decoration:none;">
+              <a href="${item.apply_url || '#'}" target="_blank" class="btn btn-primary" style="flex:1; justify-content:center; padding:10px; font-size:13px; text-decoration:none;">
                 ${buttonText}
               </a>
             </div>
