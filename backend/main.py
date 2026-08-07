@@ -134,7 +134,9 @@ def trigger_crawl():
         "count": len(opportunities_cache)
     }
 
-from backend.job_evaluator import get_user_profile, update_user_profile, evaluate_job_fit, generate_cover_letter
+from backend.job_evaluator import get_user_profile, update_user_profile, evaluate_job_fit, generate_cover_letter, generate_skill_roadmap, generate_tailored_resume
+from backend.resume_parser import parse_resume_text
+from backend.application_tracker import get_applications, update_application_status
 
 class ProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -145,6 +147,13 @@ class ProfileUpdate(BaseModel):
 
 class ItemIdRequest(BaseModel):
     item_id: str
+
+class ResumeUploadRequest(BaseModel):
+    resume_text: str
+
+class ApplicationUpdateRequest(BaseModel):
+    item_id: str
+    status: str
 
 @app.get("/api/profile")
 def get_profile_endpoint():
@@ -158,25 +167,64 @@ def update_profile_endpoint(payload: ProfileUpdate):
     updated = update_user_profile(data)
     return {"status": "success", "profile": updated}
 
+@app.post("/api/resume/upload")
+def upload_resume_text_endpoint(payload: ResumeUploadRequest):
+    """Parses resume text and populates candidate profile automatically."""
+    parsed = parse_resume_text(payload.resume_text)
+    updated = update_user_profile(parsed)
+    return {"status": "success", "profile": updated, "message": "Resume parsed and profile updated!"}
+
 @app.post("/api/evaluate")
 def evaluate_fit_endpoint(payload: ItemIdRequest):
     """Evaluates candidate fit score (0-100%) against a posting."""
     target_item = next((item for item in opportunities_cache if item.get("id") == payload.item_id), None)
     if not target_item:
-        raise HTTPException(status_code=44, detail="Item not found")
+        raise HTTPException(status_code=404, detail="Item not found")
 
     result = evaluate_job_fit(target_item)
     return {"status": "success", "evaluation": result}
+
+@app.post("/api/ai/roadmap")
+def skill_roadmap_endpoint(payload: ItemIdRequest):
+    """Generates PRD Feature 13 Skill Gap Analysis & Learning Roadmap."""
+    target_item = next((item for item in opportunities_cache if item.get("id") == payload.item_id), None)
+    if not target_item:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    roadmap = generate_skill_roadmap(target_item)
+    return {"status": "success", "roadmap": roadmap}
 
 @app.post("/api/generate-letter")
 def generate_cover_letter_endpoint(payload: ItemIdRequest):
     """Generates customized cover letter draft for a posting."""
     target_item = next((item for item in opportunities_cache if item.get("id") == payload.item_id), None)
     if not target_item:
-        raise HTTPException(status_code=44, detail="Item not found")
+        raise HTTPException(status_code=404, detail="Item not found")
 
     letter = generate_cover_letter(target_item)
     return {"status": "success", "cover_letter": letter}
+
+@app.post("/api/generate-resume")
+def generate_resume_endpoint(payload: ItemIdRequest):
+    """Generates customized downloadable resume for a posting."""
+    target_item = next((item for item in opportunities_cache if item.get("id") == payload.item_id), None)
+    if not target_item:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    resume = generate_tailored_resume(target_item)
+    return {"status": "success", "tailored_resume": resume}
+
+@app.get("/api/applications")
+def get_applications_endpoint():
+    """Gets application tracker board list."""
+    return {"status": "success", "applications": get_applications()}
+
+@app.post("/api/applications/update")
+def update_application_endpoint(payload: ApplicationUpdateRequest):
+    """Updates status for an opportunity in application tracker."""
+    target_item = next((item for item in opportunities_cache if item.get("id") == payload.item_id), None)
+    app_entry = update_application_status(payload.item_id, payload.status, target_item)
+    return {"status": "success", "application": app_entry}
 
 # Mount static frontend directory
 frontend_dir = os.path.join(BASE_DIR, "frontend")

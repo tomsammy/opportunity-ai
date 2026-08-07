@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpportunityIQ | AI Intelligence Platform for Jobs, Scholarships & News</title>
-  <link rel="stylesheet" href="/static/styles.css?v=7">
+  <link rel="stylesheet" href="/static/styles.css?v=8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -22,6 +22,9 @@
         <button class="btn btn-secondary" onclick="openProfileModal()">
           <span>📄 Candidate Profile</span>
         </button>
+        <button class="btn btn-secondary" onclick="openTrackerModal()">
+          <span>📌 Application Tracker</span>
+        </button>
         <button class="btn btn-secondary" id="btn-crawl" onclick="triggerCrawl()">
           <span>🔄 Sync & Crawl Web</span>
         </button>
@@ -32,29 +35,42 @@
     </div>
   </header>
 
-  <!-- Hero Banner -->
+  <!-- Hero Banner (PRD Alignment) -->
   <main class="container">
     <section class="hero">
       <div class="hero-badge">
-        <span>⚡ Real-Time Web Intelligence Engine</span>
+        <span>⚡ Real-Time AI Web Intelligence Engine</span>
       </div>
       <h1 class="hero-title">
-        Discover Fresh Scholarships, Jobs &<br><span>High-Value Opportunities First</span>
+        Never Miss Another Opportunity<br><span>You're Qualified For</span>
       </h1>
       <p class="hero-sub">
-        Continuous AI web crawler extracting verified scholarships, grants, remote tech roles, and industry news directly into a single RAG-powered knowledge directory.
+        Upload your resume once. Our AI continuously finds jobs, grants, scholarships, fellowships, tenders, accelerators, and funding opportunities tailored to your skills.
       </p>
 
       <!-- Search Input & Quick Chips -->
       <div class="search-container">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" class="search-input" placeholder="Search by keyword, country, degree level, or visa pathway (e.g. Canada, UK Visa, Germany, PhD, Remote)..." onkeyup="handleSearch()">
+        <input type="text" id="search-input" class="search-input" placeholder="Search by keyword, country, degree level, or tender (e.g. Canada, UK Visa, Germany, PhD, Remote, Startup)..." onkeyup="handleSearch()">
         <div style="display:flex; justify-content:center; gap:8px; margin-top:12px; flex-wrap:wrap;">
           <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Japa')">✈️ Japa & Visa News</span>
           <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Canada')">🇨🇦 Canada Pathways</span>
           <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('UK')">🇬🇧 UK Visas</span>
           <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Scholarship')">🎓 Scholarships</span>
           <span class="tab-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="setSearch('Remote')">💼 Remote Roles</span>
+        </div>
+      </div>
+
+      <!-- PRD Target Audience Segment Tabs -->
+      <div style="margin-bottom:24px; text-align:center;">
+        <div style="font-size:12px; font-weight:700; color:var(--text-subtle); text-transform:uppercase; margin-bottom:10px;">Tailored For Your Audience:</div>
+        <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+          <button class="tab-btn active" onclick="filterSegment('All', this)">🌐 All Profiles</button>
+          <button class="tab-btn" onclick="filterSegment('Student', this)">🎓 Students</button>
+          <button class="tab-btn" onclick="filterSegment('JobSeeker', this)">💼 Job Seekers</button>
+          <button class="tab-btn" onclick="filterSegment('Entrepreneur', this)">🚀 Entrepreneurs</button>
+          <button class="tab-btn" onclick="filterSegment('Business', this)">🏛️ Businesses (Tenders)</button>
+          <button class="tab-btn" onclick="filterSegment('NGO', this)">🌐 NGOs (Grants)</button>
         </div>
       </div>
 
@@ -78,13 +94,17 @@
         </div>
       </div>
 
-      <!-- Category Filter Tabs -->
+      <!-- 8 PRD Category Filter Tabs -->
       <div class="category-tabs">
-        <button class="tab-btn active" onclick="filterCategory('All', this)">🌐 All Directory</button>
+        <button class="tab-btn active" onclick="filterCategory('All', this)">🌐 All Categories</button>
+        <button class="tab-btn" onclick="filterCategory('Job', this)">💼 Jobs</button>
         <button class="tab-btn" onclick="filterCategory('Scholarship', this)">🎓 Scholarships</button>
-        <button class="tab-btn" onclick="filterCategory('Job', this)">💼 Jobs & Careers</button>
-        <button class="tab-btn" onclick="filterCategory('Grant', this)">🔬 Fellowships & Grants</button>
-        <button class="tab-btn" onclick="filterCategory('News', this)">📰 Tech & Market News</button>
+        <button class="tab-btn" onclick="filterCategory('Grant', this)">🔬 Grants</button>
+        <button class="tab-btn" onclick="filterCategory('Fellowship', this)">🏅 Fellowships</button>
+        <button class="tab-btn" onclick="filterCategory('Accelerator', this)">🚀 Accelerators</button>
+        <button class="tab-btn" onclick="filterCategory('Competition', this)">🏆 Competitions</button>
+        <button class="tab-btn" onclick="filterCategory('Tender', this)">🏛️ Tenders</button>
+        <button class="tab-btn" onclick="filterCategory('Internship', this)">💼 Internships</button>
       </div>
     </section>
 
@@ -136,6 +156,14 @@
         Configure your target skills and background so the AI Job Search engine can evaluate your fit score and generate custom cover letters.
       </p>
 
+      <!-- Drag & Drop Resume Upload Dropzone (PRD Feature 3) -->
+      <div style="margin-bottom:16px; border:2px dashed var(--border-glow); border-radius:12px; padding:16px; text-align:center; background:rgba(59,130,246,0.05); cursor:pointer;" onclick="document.getElementById('resume-file-input').click()">
+        <span style="font-size:24px;">⚡</span>
+        <div style="font-weight:600; font-size:13px; color:#fff; margin-top:4px;">Upload Resume (Paste or Select PDF/Text File)</div>
+        <div style="font-size:11px; color:var(--text-subtle);">AI automatically extracts your skills, education, and target roles in < 2 sec</div>
+        <input type="file" id="resume-file-input" accept=".pdf,.txt,.doc,.docx" style="display:none;" onchange="handleResumeUpload(event)">
+      </div>
+
       <div style="display:flex; flex-direction:column; gap:14px;">
         <div>
           <label style="font-size:12px; font-weight:600; color:var(--text-subtle);">Full Name</label>
@@ -163,6 +191,25 @@
         <button class="btn btn-secondary" style="flex:1; justify-content:center;" onclick="closeProfileModal()">Cancel</button>
         <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="saveProfile()">Save Profile</button>
       </div>
+    </div>
+  </div>
+
+  <!-- PRD Feature 9 Application Tracker Kanban Board Modal -->
+  <div id="tracker-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width:920px; width:95%; text-align:left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div>
+          <h3 class="modal-title" style="margin:0;">📌 Application Progress Tracker</h3>
+          <div style="font-size:12px; color:var(--text-subtle);">Track all your saved, preparing, applied, and interview opportunities</div>
+        </div>
+        <button onclick="closeTrackerModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; max-height:65vh; overflow-y:auto;" id="tracker-board-container">
+        <!-- Dynamic Kanban Columns & Cards -->
+      </div>
+
+      <button class="btn btn-primary" style="width:100%; margin-top:20px; justify-content:center;" onclick="closeTrackerModal()">Close Tracker</button>
     </div>
   </div>
 
@@ -206,6 +253,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=7"></script>
+  <script src="/static/app.js?v=8"></script>
 </body>
 </html>

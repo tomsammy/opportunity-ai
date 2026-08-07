@@ -54,7 +54,7 @@ INITIAL_SEED_OPPORTUNITIES = [
     {
         "id": "opp-004",
         "title": "Google AI & Quantum Research Fellowship 2026",
-        "category": "Grant",
+        "category": "Fellowship",
         "funding_amount": "$75,000 USD Annual Research Grant + Google Cloud Credits",
         "deadline": "November 15, 2026",
         "eligibility": "PhD Candidates & Postdoctoral Researchers in Computer Science/AI",
@@ -64,6 +64,62 @@ INITIAL_SEED_OPPORTUNITIES = [
         "region": "Global / Remote",
         "summary": "Direct research funding for promising PhD students undertaking exceptional research in Computer Science, Machine Learning, Robotics, and Natural Language Processing.",
         "content": "The Google PhD Fellowship Program recognizes outstanding graduate students doing exceptional research in computer science and related disciplines."
+    },
+    {
+        "id": "opp-005",
+        "title": "Y Combinator W2027 Startup Accelerator Program ($500,000 Funding)",
+        "category": "Accelerator",
+        "funding_amount": "$500,000 Investment ($125k for 7% + $375k uncapped MFN)",
+        "deadline": "October 14, 2026",
+        "eligibility": "Early-stage founders worldwide building technology startups",
+        "source_name": "Y Combinator",
+        "apply_url": "https://www.ycombinator.com/apply",
+        "published_at": "2026-08-04",
+        "region": "Global / San Francisco",
+        "summary": "The premier 3-month startup accelerator providing $500,000 funding, intensive mentorship, and direct access to global venture capital investors.",
+        "content": "Y Combinator created a new model for funding early stage startups. Twice a year we invest $500k per company in a large number of startups."
+    },
+    {
+        "id": "opp-006",
+        "title": "United Nations Global Youth AI Innovation Challenge 2026",
+        "category": "Competition",
+        "funding_amount": "$50,000 USD Cash Prize + Mentorship + UN Youth Summit Presentation",
+        "deadline": "September 25, 2026",
+        "eligibility": "Youth Innovators & Developers Aged 18–35",
+        "source_name": "United Nations ITU",
+        "apply_url": "https://www.itu.int/en/ITU-D/Youth/Pages/Global-Innovation-Challenge.aspx",
+        "published_at": "2026-08-05",
+        "region": "Global",
+        "summary": "Global competition calling for AI-driven solutions addressing climate change, education, healthcare, and sustainable development goals.",
+        "content": "The UN Youth Innovation Challenge invites young developers to build sustainable AI tools solving community challenges."
+    },
+    {
+        "id": "opp-007",
+        "title": "World Bank Group Climate Infrastructure Government Procurement Tender 2026",
+        "category": "Tender",
+        "funding_amount": "$1,200,000 USD Contract Budget",
+        "deadline": "December 10, 2026",
+        "eligibility": "Registered Engineering, Data Science & CleanTech Firms",
+        "source_name": "World Bank Procurement",
+        "apply_url": "https://projects.worldbank.org/en/projects-operations/procurement",
+        "published_at": "2026-08-05",
+        "region": "Global",
+        "summary": "International government procurement tender for digital climate monitoring and clean infrastructure consultancy services.",
+        "content": "The World Bank invites expression of interest tenders from qualified technology consultancies."
+    },
+    {
+        "id": "opp-008",
+        "title": "CERN OpenLab Summer Student Graduate Internship 2027",
+        "category": "Internship",
+        "funding_amount": "Fully Funded (90 CHF/day Stipend + Travel + Accommodation)",
+        "deadline": "January 31, 2027",
+        "eligibility": "Bachelor's or Master's students in Computer Science, Math, or Physics",
+        "source_name": "CERN Switzerland",
+        "apply_url": "https://openlab.cern/education/cern-openlab-summer-student-programme",
+        "published_at": "2026-08-06",
+        "region": "Switzerland / Europe",
+        "summary": "9-week summer research internship at CERN Geneva working on cutting-edge cloud, AI, high-performance computing, and particle physics simulations.",
+        "content": "CERN openlab summer students work on advanced computing projects alongside world-leading scientists."
     }
 ]
 
