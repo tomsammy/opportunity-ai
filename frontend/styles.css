@@ -125,10 +125,15 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Hero Section */
+/* Hero Section - Centered Minimal Landing Page */
 .hero {
   text-align: center;
-  padding: 48px 0 32px;
+  min-height: calc(82vh - 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
 }
 
 .hero-badge {
@@ -146,11 +151,12 @@ body {
 }
 
 .hero-title {
-  font-size: 44px;
+  font-size: 48px;
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -1px;
   margin-bottom: 16px;
+  max-width: 900px;
 }
 
 .hero-title span {
@@ -164,19 +170,21 @@ body {
   color: var(--text-muted);
   max-width: 680px;
   margin: 0 auto 36px;
+  line-height: 1.5;
 }
 
 /* Search & Controls */
 .search-container {
-  max-width: 720px;
-  margin: 0 auto 36px;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto 24px;
   position: relative;
 }
 
 .search-input {
   width: 100%;
-  padding: 16px 24px;
-  padding-left: 50px;
+  padding: 18px 24px;
+  padding-left: 54px;
   border-radius: var(--radius-lg);
   background: var(--bg-card);
   border: 1px solid var(--border-card);
