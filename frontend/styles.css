@@ -439,11 +439,113 @@ body {
   outline: none;
 }
 
-/* Responsive */
+/* Comprehensive Responsive Breakpoints */
+@media (max-width: 992px) {
+  .hero-title { font-size: 38px; }
+  .opportunities-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+}
+
 @media (max-width: 768px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .hero-title { font-size: 32px; }
-  .chat-drawer { width: 100%; right: -100%; }
+  .navbar .container {
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+  }
+  
+  .nav-actions {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: 30px 0 20px;
+  }
+
+  .hero-title {
+    font-size: 28px;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    margin-bottom: 24px;
+    padding: 0 8px;
+  }
+
+  .search-container {
+    margin-bottom: 20px;
+  }
+
+  .search-input {
+    padding: 14px 16px 14px 44px;
+    font-size: 14px;
+  }
+
+  .search-icon {
+    left: 14px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 12px 14px;
+  }
+
+  .stat-num {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .opportunities-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .chat-drawer {
+    width: 100%;
+    right: -100%;
+  }
+
+  .modal-card {
+    padding: 20px;
+    width: 94%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 24px;
+  }
+
+  .brand-title {
+    font-size: 18px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
 }
 
 /* Modal Notification Overlay */
