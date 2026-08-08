@@ -574,3 +574,77 @@ function copyCoverLetter() {
   document.execCommand('copy');
   showNotification("Copied!", "Cover letter copied to clipboard.");
 }
+
+/* Reactive Resume Multi-Template CV Builder Functions */
+let currentCVTemplate = 'tech';
+let currentCVHTML = '';
+let currentCVJSON = null;
+
+async function openCVBuilderModal(itemId = null) {
+  const modal = document.getElementById('cv-builder-modal');
+  modal.classList.add('open');
+  fetchCVPreview(currentCVTemplate, itemId);
+}
+
+function closeCVBuilderModal() {
+  document.getElementById('cv-builder-modal').classList.remove('open');
+}
+
+function selectCVTemplate(templateType, element) {
+  currentCVTemplate = templateType;
+  document.querySelectorAll('#cv-builder-modal button.tab-btn').forEach(btn => btn.classList.remove('active'));
+  if (element) element.classList.add('active');
+  fetchCVPreview(templateType);
+}
+
+async function fetchCVPreview(templateType = 'tech', itemId = null) {
+  const container = document.getElementById('cv-preview-container');
+  container.innerHTML = '<div style="color:#64748b; padding:30px; text-align:center;">⏳ Generating tailored ATS CV preview...</div>';
+
+  try {
+    const res = await fetch('/api/cv/builder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ template_type: templateType, item_id: itemId })
+    });
+    const data = await res.json();
+    currentCVHTML = data.html_cv || '';
+    currentCVJSON = data.json_cv || {};
+
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '480px';
+    iframe.style.border = 'none';
+    container.innerHTML = '';
+    container.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(currentCVHTML);
+    doc.close();
+  } catch (err) {
+    container.innerHTML = '<div style="color:#ef4444; padding:20px; text-align:center;">Failed to generate CV preview.</div>';
+  }
+}
+
+function printPreviewCV() {
+  if (!currentCVHTML) return;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(currentCVHTML);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => printWindow.print(), 500);
+}
+
+function downloadCVFormat(format = 'json') {
+  if (format === 'json' && currentCVJSON) {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentCVJSON, null, 2));
+    const a = document.createElement('a');
+    a.setAttribute("href", dataStr);
+    a.setAttribute("download", `Reactive_Resume_${currentCVTemplate}.json`);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showNotification("JSON Downloaded", "Reactive Resume JSON schema downloaded!");
+  }
+}

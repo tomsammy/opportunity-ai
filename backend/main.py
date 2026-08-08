@@ -137,6 +137,7 @@ def trigger_crawl():
 from backend.job_evaluator import get_user_profile, update_user_profile, evaluate_job_fit, generate_cover_letter, generate_skill_roadmap, generate_tailored_resume
 from backend.resume_parser import parse_resume_text
 from backend.application_tracker import get_applications, update_application_status
+from backend.reactive_cv_builder import render_cv_template_html, generate_reactive_resume_json
 
 class ProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -154,6 +155,28 @@ class ResumeUploadRequest(BaseModel):
 class ApplicationUpdateRequest(BaseModel):
     item_id: str
     status: str
+
+class CVBuilderRequest(BaseModel):
+    item_id: Optional[str] = None
+    template_type: Optional[str] = "tech"
+
+@app.post("/api/cv/builder")
+def cv_builder_endpoint(payload: CVBuilderRequest):
+    """Generates application-tailored HTML and Reactive Resume JSON schema CV."""
+    profile = get_user_profile()
+    target_item = None
+    if payload.item_id:
+        target_item = next((item for item in opportunities_cache if item.get("id") == payload.item_id), None)
+
+    html_cv = render_cv_template_html(profile, target_item, payload.template_type or "tech")
+    json_cv = generate_reactive_resume_json(profile, payload.template_type or "tech")
+
+    return {
+        "status": "success",
+        "html_cv": html_cv,
+        "json_cv": json_cv,
+        "template": payload.template_type
+    }
 
 @app.get("/api/profile")
 def get_profile_endpoint():

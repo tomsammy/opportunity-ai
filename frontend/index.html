@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpportunityIQ | AI Intelligence Platform for Jobs, Scholarships & News</title>
-  <link rel="stylesheet" href="/static/styles.css?v=10">
+  <link rel="stylesheet" href="/static/styles.css?v=11">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,6 +21,9 @@
       <div class="nav-actions">
         <button class="btn btn-secondary" onclick="openProfileModal()">
           <span>📄 Candidate Profile</span>
+        </button>
+        <button class="btn btn-secondary" onclick="openCVBuilderModal()">
+          <span>🎨 Reactive CV Builder</span>
         </button>
         <button class="btn btn-secondary" onclick="openTrackerModal()">
           <span>📌 Application Tracker</span>
@@ -196,6 +199,35 @@
     </div>
   </div>
 
+  <!-- Reactive Resume Multi-Template CV Builder Modal -->
+  <div id="cv-builder-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width:920px; width:95%; text-align:left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div>
+          <h3 class="modal-title" style="margin:0;">🎨 Reactive CV Builder (Multi-Template Engine)</h3>
+          <div style="font-size:12px; color:var(--text-subtle);">Generate application-specific CVs tailored for Tech, Scholarships, Grants, Fellowships, or Founders</div>
+        </div>
+        <button onclick="closeCVBuilderModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+        <button class="tab-btn active" id="tmpl-btn-tech" onclick="selectCVTemplate('tech', this)">💼 Tech & Software CV</button>
+        <button class="tab-btn" id="tmpl-btn-academic" onclick="selectCVTemplate('academic', this)">🎓 Academic & Scholarship CV</button>
+        <button class="tab-btn" id="tmpl-btn-fellowship" onclick="selectCVTemplate('fellowship', this)">🔬 Research & Fellowship CV</button>
+        <button class="tab-btn" id="tmpl-btn-founder" onclick="selectCVTemplate('founder', this)">🚀 Startup Founder Profile</button>
+      </div>
+
+      <div id="cv-preview-container" style="background:#fff; border-radius:8px; padding:20px; max-height:55vh; overflow-y:auto; border:1px solid var(--border-card); box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+        <!-- Rendered HTML CV Preview -->
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button class="btn btn-secondary" style="flex:1; justify-content:center;" onclick="downloadCVFormat('json')">💾 Download JSON (Reactive Resume Format)</button>
+        <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="printPreviewCV()">🖨️ Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+
   <!-- PRD Feature 9 Application Tracker Kanban Board Modal -->
   <div id="tracker-modal" class="modal-overlay">
     <div class="modal-card" style="max-width:920px; width:95%; text-align:left;">
@@ -255,6 +287,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=10"></script>
+  <script src="/static/app.js?v=11"></script>
 </body>
 </html>
