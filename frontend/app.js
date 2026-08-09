@@ -648,39 +648,3 @@ function downloadCVFormat(format = 'json') {
     showNotification("JSON Downloaded", "Reactive Resume JSON schema downloaded!");
   }
 }
-
-/* WhatsApp Public Channel URL Crawler Functions */
-function openWhatsAppModal() {
-  document.getElementById('whatsapp-modal').classList.add('open');
-}
-
-function closeWhatsAppModal() {
-  document.getElementById('whatsapp-modal').classList.remove('open');
-}
-
-async function crawlWhatsAppChannelURL() {
-  const url = document.getElementById('wa-channel-url-input').value;
-  if (!url || !url.includes('whatsapp.com')) {
-    showNotification("Invalid Channel URL", "Please enter a valid WhatsApp Channel Link (e.g. https://whatsapp.com/channel/...)", true);
-    return;
-  }
-
-  showNotification("Crawling WhatsApp Channel...", "AI web crawler is fetching live feed posts & extracting opportunities...");
-
-  try {
-    const res = await fetch('/api/whatsapp/crawl_url', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ channel_url: url })
-    });
-    const data = await res.json();
-    if (data.status === 'success') {
-      closeWhatsAppModal();
-      document.getElementById('wa-channel-url-input').value = '';
-      showNotification("Channel Crawled!", `Extracted ${data.count || 0} opportunities from WhatsApp Channel URL!`);
-      fetchOpportunities();
-    }
-  } catch (err) {
-    showNotification("Crawl Error", "Failed to crawl WhatsApp Channel URL.", true);
-  }
-}

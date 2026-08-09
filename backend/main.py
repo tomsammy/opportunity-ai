@@ -40,10 +40,18 @@ def load_data():
             logging.error(f"Error loading DB: {e}")
             opportunities_cache = []
 
-    # Filter out any raw URL dummy fallback items
-    opportunities_cache = [item for item in opportunities_cache if not (item.get("title", "").startswith("httpswhatsappcomchannel") or item.get("id", "").startswith("wac-seed"))]
+    # Completely purge any WhatsApp items
+    opportunities_cache = [item for item in opportunities_cache if not is_whatsapp_item(item)]
+    save_data()
 
     rag_engine.index_documents(opportunities_cache)
+
+def is_whatsapp_item(item: dict) -> bool:
+    """Helper to completely filter out any WhatsApp channel or text item."""
+    title = str(item.get("title", "")).lower()
+    source = str(item.get("source_name", "")).lower()
+    item_id = str(item.get("id", "")).lower()
+    return "whatsapp" in title or "whatsapp" in source or item_id.startswith("wa-") or item_id.startswith("wac-") or bool(item.get("is_whatsapp")) or bool(item.get("is_whatsapp_channel"))
 
 def save_data():
     with open(DB_PATH, "w", encoding="utf-8") as f:
@@ -60,7 +68,7 @@ def get_opportunities(
     limit: int = 20
 ):
     """Retrieves filtered list of high-value opportunities."""
-    data = [item for item in opportunities_cache if not (item.get("title", "").startswith("httpswhatsappcomchannel") or item.get("id", "").startswith("wac-seed"))]
+    data = [item for item in opportunities_cache if not is_whatsapp_item(item)]
 
     if category and category.lower() != "all":
         data = [item for item in data if item.get("category", "").lower() == category.lower()]
@@ -136,7 +144,6 @@ from backend.job_evaluator import get_user_profile, update_user_profile, evaluat
 from backend.resume_parser import parse_resume_text
 from backend.application_tracker import get_applications, update_application_status
 from backend.reactive_cv_builder import render_cv_template_html, generate_reactive_resume_json
-from backend.whatsapp_channel_crawler import crawl_whatsapp_channel_url
 
 class ProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -158,17 +165,6 @@ class ApplicationUpdateRequest(BaseModel):
 class CVBuilderRequest(BaseModel):
     item_id: Optional[str] = None
     template_type: Optional[str] = "tech"
-
-class WhatsAppCrawlRequest(BaseModel):
-    channel_url: str
-
-@app.post("/api/whatsapp/crawl_url")
-def whatsapp_crawl_url_endpoint(payload: WhatsAppCrawlRequest):
-    """Crawls a public WhatsApp Channel URL and indexes all extracted opportunities into RAG directory."""
-    items = crawl_whatsapp_channel_url(payload.channel_url)
-    for item in items:
-        opportunities_cache.insert(0, item)
-    return {"status": "success", "count": len(items), "opportunities": items, "message": f"Crawled WhatsApp Channel URL successfully! Extracted {len(items)} opportunities."}
 
 @app.post("/api/cv/builder")
 def cv_builder_endpoint(payload: CVBuilderRequest):

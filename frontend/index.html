@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpportunityIQ | AI Intelligence Platform for Jobs, Scholarships & News</title>
-  <link rel="stylesheet" href="/static/styles.css?v=13">
+  <link rel="stylesheet" href="/static/styles.css?v=14">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,9 +27,6 @@
         </button>
         <button class="btn btn-secondary" onclick="openTrackerModal()">
           <span>📌 Application Tracker</span>
-        </button>
-        <button class="btn btn-secondary" onclick="openWhatsAppModal()">
-          <span>💬 WhatsApp Channel</span>
         </button>
         <button class="btn btn-secondary" id="btn-crawl" onclick="triggerCrawl()">
           <span>🔄 Sync & Crawl Web</span>
@@ -231,26 +228,6 @@
     </div>
   </div>
 
-  <!-- WhatsApp Channel URL Crawler Modal -->
-  <div id="whatsapp-modal" class="modal-overlay">
-    <div class="modal-card" style="max-width:560px; text-align:left;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h3 class="modal-title" style="margin:0;">💬 Crawl WhatsApp Channel URL</h3>
-        <button onclick="closeWhatsAppModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
-      </div>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
-        Enter any public WhatsApp Channel Link below (e.g. <code>https://whatsapp.com/channel/...</code>). Opportunity AI will automatically crawl the channel feed and extract all listed jobs, scholarships, and opportunities into your directory!
-      </p>
-
-      <input type="url" id="wa-channel-url-input" class="chat-input" style="width:100%;" placeholder="https://whatsapp.com/channel/0029Va...">
-
-      <div style="display:flex; gap:10px; margin-top:20px;">
-        <button class="btn btn-secondary" style="flex:1; justify-content:center;" onclick="closeWhatsAppModal()">Cancel</button>
-        <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="crawlWhatsAppChannelURL()">Crawl & Fetch Channel</button>
-      </div>
-    </div>
-  </div>
-
   <!-- PRD Feature 9 Application Tracker Kanban Board Modal -->
   <div id="tracker-modal" class="modal-overlay">
     <div class="modal-card" style="max-width:920px; width:95%; text-align:left;">
@@ -310,6 +287,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=13"></script>
+  <script src="/static/app.js?v=14"></script>
 </body>
 </html>
