@@ -77,25 +77,7 @@ def crawl_whatsapp_channel_url(channel_url: str, channel_name: str = "WhatsApp C
     except Exception as e:
         logging.warning(f"Failed to crawl WhatsApp Channel URL {channel_url}: {e}")
 
-    # If no live HTML nodes found, return structured channel seed items
-    if not items:
-        items.append({
-            "id": f"wac-seed-{abs(hash(channel_url))}",
-            "title": f"Live Updates Feed - {channel_name}",
-            "category": "Job",
-            "funding_amount": "Channel Broadcast Opportunity",
-            "deadline": "Rolling",
-            "eligibility": "Open Applicants",
-            "source_name": f"WhatsApp Channel ({channel_name})",
-            "apply_url": channel_url,
-            "published_at": datetime.now().strftime("%Y-%m-%d"),
-            "region": "Global / Remote",
-            "summary": f"Automated crawler feed extracting live job & scholarship opportunities directly from WhatsApp Channel: {channel_url}",
-            "contact_email": "channel-admin@whatsapp.com",
-            "scout_score": 91,
-            "is_whatsapp_channel": True
-        })
-
+    # If no real opportunity posts are extracted, return empty list (do not create dummy URL cards)
     return items
 
 def crawl_all_registered_whatsapp_channels() -> list:

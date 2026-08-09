@@ -40,10 +40,8 @@ def load_data():
             logging.error(f"Error loading DB: {e}")
             opportunities_cache = []
 
-    if not opportunities_cache:
-        # Seed initial data
-        opportunities_cache = run_crawling_cycle()
-        save_data()
+    # Filter out any raw URL dummy fallback items
+    opportunities_cache = [item for item in opportunities_cache if not (item.get("title", "").startswith("httpswhatsappcomchannel") or item.get("id", "").startswith("wac-seed"))]
 
     rag_engine.index_documents(opportunities_cache)
 
@@ -62,7 +60,7 @@ def get_opportunities(
     limit: int = 20
 ):
     """Retrieves filtered list of high-value opportunities."""
-    data = opportunities_cache
+    data = [item for item in opportunities_cache if not (item.get("title", "").startswith("httpswhatsappcomchannel") or item.get("id", "").startswith("wac-seed"))]
 
     if category and category.lower() != "all":
         data = [item for item in data if item.get("category", "").lower() == category.lower()]
