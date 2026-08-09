@@ -649,7 +649,7 @@ function downloadCVFormat(format = 'json') {
   }
 }
 
-/* WhatsApp Channel Functions */
+/* WhatsApp Public Channel URL Crawler Functions */
 function openWhatsAppModal() {
   document.getElementById('whatsapp-modal').classList.add('open');
 }
@@ -658,56 +658,29 @@ function closeWhatsAppModal() {
   document.getElementById('whatsapp-modal').classList.remove('open');
 }
 
-async function ingestWhatsAppMessage() {
-  const text = document.getElementById('wa-input-text').value;
-  if (!text) {
-    showNotification("Empty Input", "Please paste a WhatsApp channel message.", true);
+async function crawlWhatsAppChannelURL() {
+  const url = document.getElementById('wa-channel-url-input').value;
+  if (!url || !url.includes('whatsapp.com')) {
+    showNotification("Invalid Channel URL", "Please enter a valid WhatsApp Channel Link (e.g. https://whatsapp.com/channel/...)", true);
     return;
   }
 
-  showNotification("Parsing WhatsApp Listing...", "AI is extracting title, location, company, and contact emails...");
+  showNotification("Crawling WhatsApp Channel...", "AI web crawler is fetching live feed posts & extracting opportunities...");
 
   try {
-    const res = await fetch('/api/whatsapp/ingest', {
+    const res = await fetch('/api/whatsapp/crawl_url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message_text: text })
+      body: JSON.stringify({ channel_url: url })
     });
     const data = await res.json();
     if (data.status === 'success') {
       closeWhatsAppModal();
-      document.getElementById('wa-input-text').value = '';
-      showNotification("Indexed Successfully!", `Opportunity "${data.opportunity.title}" indexed into live RAG directory!`);
+      document.getElementById('wa-channel-url-input').value = '';
+      showNotification("Channel Crawled!", `Extracted ${data.count || 0} opportunities from WhatsApp Channel URL!`);
       fetchOpportunities();
     }
   } catch (err) {
-    showNotification("Ingest Error", "Failed to parse WhatsApp message.", true);
-  }
-}
-
-async function shareToWhatsAppChannel(itemId) {
-  try {
-    const res = await fetch('/api/whatsapp/format', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ item_id: itemId })
-    });
-    const data = await res.json();
-    const msg = data.whatsapp_message || "";
-    
-    // Copy to clipboard
-    const dummy = document.createElement('textarea');
-    document.body.appendChild(dummy);
-    dummy.value = msg;
-    dummy.select();
-    document.execCommand('copy');
-    document.body.removeChild(dummy);
-
-    // Open WhatsApp Web/App sharing URL
-    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
-    window.open(waUrl, '_blank');
-    showNotification("WhatsApp Formatted!", "Opportunity copied & formatted for WhatsApp channel broadcast!");
-  } catch (err) {
-    showNotification("Share Error", "Failed to format WhatsApp text.", true);
+    showNotification("Crawl Error", "Failed to crawl WhatsApp Channel URL.", true);
   }
 }

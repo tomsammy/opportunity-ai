@@ -138,7 +138,7 @@ from backend.job_evaluator import get_user_profile, update_user_profile, evaluat
 from backend.resume_parser import parse_resume_text
 from backend.application_tracker import get_applications, update_application_status
 from backend.reactive_cv_builder import render_cv_template_html, generate_reactive_resume_json
-from backend.whatsapp_engine import parse_whatsapp_message, format_opportunity_for_whatsapp_channel, WHATSAPP_CHANNEL_SEED_OPPORTUNITIES
+from backend.whatsapp_channel_crawler import crawl_whatsapp_channel_url
 
 class ProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -161,25 +161,16 @@ class CVBuilderRequest(BaseModel):
     item_id: Optional[str] = None
     template_type: Optional[str] = "tech"
 
-class WhatsAppIngestRequest(BaseModel):
-    message_text: str
+class WhatsAppCrawlRequest(BaseModel):
+    channel_url: str
 
-@app.post("/api/whatsapp/ingest")
-def whatsapp_ingest_endpoint(payload: WhatsAppIngestRequest):
-    """Parses raw text from WhatsApp channels and indexes it into live RAG directory."""
-    parsed_item = parse_whatsapp_message(payload.message_text)
-    opportunities_cache.insert(0, parsed_item)
-    return {"status": "success", "opportunity": parsed_item, "message": "WhatsApp opportunity parsed & indexed!"}
-
-@app.post("/api/whatsapp/format")
-def whatsapp_format_endpoint(payload: ItemIdRequest):
-    """Formats an opportunity into clean WhatsApp channel broadcast text."""
-    target_item = next((item for item in opportunities_cache if item.get("id") == payload.item_id), None)
-    if not target_item:
-        raise HTTPException(status_code=404, detail="Item not found")
-
-    formatted_msg = format_opportunity_for_whatsapp_channel(target_item)
-    return {"status": "success", "whatsapp_message": formatted_msg}
+@app.post("/api/whatsapp/crawl_url")
+def whatsapp_crawl_url_endpoint(payload: WhatsAppCrawlRequest):
+    """Crawls a public WhatsApp Channel URL and indexes all extracted opportunities into RAG directory."""
+    items = crawl_whatsapp_channel_url(payload.channel_url)
+    for item in items:
+        opportunities_cache.insert(0, item)
+    return {"status": "success", "count": len(items), "opportunities": items, "message": f"Crawled WhatsApp Channel URL successfully! Extracted {len(items)} opportunities."}
 
 @app.post("/api/cv/builder")
 def cv_builder_endpoint(payload: CVBuilderRequest):

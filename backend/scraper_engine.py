@@ -7,7 +7,7 @@ from backend.extractor import extract_metadata_from_content
 from backend.scout_engine import fetch_scout_rare_opportunities
 from backend.scout_youtube_crawler import crawl_youtube_opportunity_feeds
 from backend.scout_multiplatform import crawl_all_8_scout_platforms
-from backend.whatsapp_engine import WHATSAPP_CHANNEL_SEED_OPPORTUNITIES
+from backend.whatsapp_channel_crawler import crawl_all_registered_whatsapp_channels
 
 logging.basicConfig(level=logging.INFO)
 
@@ -225,9 +225,10 @@ def run_crawling_cycle() -> list:
     multi_items = crawl_all_8_scout_platforms()
     crawled_data.extend(multi_items)
 
-    # 0d. Fetch WhatsApp Channel Ingested Opportunities
-    logging.info("Scouting WhatsApp Channel Feed Opportunities...")
-    crawled_data.extend(WHATSAPP_CHANNEL_SEED_OPPORTUNITIES)
+    # 0d. Crawl Registered WhatsApp Public Channel Web Feeds
+    logging.info("Crawling WhatsApp Public Channel Feeds (WhatsApp Channel Crawler)...")
+    wa_items = crawl_all_registered_whatsapp_channels()
+    crawled_data.extend(wa_items)
     
     # 1. Fetch Live Remote Jobs (Remotive API + Arbeitnow API)
     logging.info("Crawling Remotive & Arbeitnow Job APIs...")
