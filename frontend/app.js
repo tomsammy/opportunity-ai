@@ -648,3 +648,66 @@ function downloadCVFormat(format = 'json') {
     showNotification("JSON Downloaded", "Reactive Resume JSON schema downloaded!");
   }
 }
+
+/* WhatsApp Channel Functions */
+function openWhatsAppModal() {
+  document.getElementById('whatsapp-modal').classList.add('open');
+}
+
+function closeWhatsAppModal() {
+  document.getElementById('whatsapp-modal').classList.remove('open');
+}
+
+async function ingestWhatsAppMessage() {
+  const text = document.getElementById('wa-input-text').value;
+  if (!text) {
+    showNotification("Empty Input", "Please paste a WhatsApp channel message.", true);
+    return;
+  }
+
+  showNotification("Parsing WhatsApp Listing...", "AI is extracting title, location, company, and contact emails...");
+
+  try {
+    const res = await fetch('/api/whatsapp/ingest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message_text: text })
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      closeWhatsAppModal();
+      document.getElementById('wa-input-text').value = '';
+      showNotification("Indexed Successfully!", `Opportunity "${data.opportunity.title}" indexed into live RAG directory!`);
+      fetchOpportunities();
+    }
+  } catch (err) {
+    showNotification("Ingest Error", "Failed to parse WhatsApp message.", true);
+  }
+}
+
+async function shareToWhatsAppChannel(itemId) {
+  try {
+    const res = await fetch('/api/whatsapp/format', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_id: itemId })
+    });
+    const data = await res.json();
+    const msg = data.whatsapp_message || "";
+    
+    // Copy to clipboard
+    const dummy = document.createElement('textarea');
+    document.body.appendChild(dummy);
+    dummy.value = msg;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+
+    // Open WhatsApp Web/App sharing URL
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, '_blank');
+    showNotification("WhatsApp Formatted!", "Opportunity copied & formatted for WhatsApp channel broadcast!");
+  } catch (err) {
+    showNotification("Share Error", "Failed to format WhatsApp text.", true);
+  }
+}

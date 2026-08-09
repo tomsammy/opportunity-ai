@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpportunityIQ | AI Intelligence Platform for Jobs, Scholarships & News</title>
-  <link rel="stylesheet" href="/static/styles.css?v=11">
+  <link rel="stylesheet" href="/static/styles.css?v=12">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,6 +27,9 @@
         </button>
         <button class="btn btn-secondary" onclick="openTrackerModal()">
           <span>📌 Application Tracker</span>
+        </button>
+        <button class="btn btn-secondary" onclick="openWhatsAppModal()">
+          <span>💬 WhatsApp Channel</span>
         </button>
         <button class="btn btn-secondary" id="btn-crawl" onclick="triggerCrawl()">
           <span>🔄 Sync & Crawl Web</span>
@@ -228,6 +231,26 @@
     </div>
   </div>
 
+  <!-- WhatsApp Channel Ingestion & Broadcast Modal -->
+  <div id="whatsapp-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width:560px; text-align:left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 class="modal-title" style="margin:0;">💬 WhatsApp Channel Intelligence</h3>
+        <button onclick="closeWhatsAppModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
+      </div>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+        Paste any raw WhatsApp channel message below. AI will automatically extract the title, company, location, application email, and index it into Opportunity AI!
+      </p>
+
+      <textarea id="wa-input-text" class="chat-input" style="width:100%; height:140px; font-family:inherit; resize:vertical;" placeholder="Paste raw WhatsApp channel text here... (e.g. WE'RE HIRING! Content Production & Social Media Manager at Topsy Travel, Lekki Lagos. Send CV to gt15recruit@gmail.com)"></textarea>
+
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button class="btn btn-secondary" style="flex:1; justify-content:center;" onclick="closeWhatsAppModal()">Cancel</button>
+        <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="ingestWhatsAppMessage()">Parse & Index Opportunity</button>
+      </div>
+    </div>
+  </div>
+
   <!-- PRD Feature 9 Application Tracker Kanban Board Modal -->
   <div id="tracker-modal" class="modal-overlay">
     <div class="modal-card" style="max-width:920px; width:95%; text-align:left;">
@@ -287,6 +310,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=11"></script>
+  <script src="/static/app.js?v=12"></script>
 </body>
 </html>
