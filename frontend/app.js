@@ -692,13 +692,93 @@ async function trackVisitorEvent(eventType, details = {}) {
 let analyticsData = null;
 let currentAnalyticsTab = 'geo';
 
+function getAdminToken() {
+  return sessionStorage.getItem('opp_admin_token') || localStorage.getItem('opp_admin_token');
+}
+
+function setAdminToken(token) {
+  sessionStorage.setItem('opp_admin_token', token);
+  localStorage.setItem('opp_admin_token', token);
+}
+
+function clearAdminToken() {
+  sessionStorage.removeItem('opp_admin_token');
+  localStorage.removeItem('opp_admin_token');
+}
+
 function openAnalyticsModal() {
-  document.getElementById('analytics-modal').classList.add('open');
-  loadAnalyticsDashboard();
+  const modal = document.getElementById('analytics-modal');
+  modal.classList.add('open');
+  
+  const token = getAdminToken();
+  const authView = document.getElementById('analytics-auth-view');
+  const dashboardView = document.getElementById('analytics-dashboard-view');
+  const errDiv = document.getElementById('admin-auth-error');
+  if (errDiv) errDiv.style.display = 'none';
+
+  if (token) {
+    authView.style.display = 'none';
+    dashboardView.style.display = 'block';
+    loadAnalyticsDashboard();
+  } else {
+    authView.style.display = 'block';
+    dashboardView.style.display = 'none';
+    const passInput = document.getElementById('admin-passcode-input');
+    if (passInput) {
+      passInput.value = '';
+      setTimeout(() => passInput.focus(), 150);
+    }
+  }
 }
 
 function closeAnalyticsModal() {
   document.getElementById('analytics-modal').classList.remove('open');
+}
+
+async function submitAdminLogin() {
+  const passInput = document.getElementById('admin-passcode-input');
+  const errDiv = document.getElementById('admin-auth-error');
+  const password = (passInput ? passInput.value : '').trim();
+
+  if (!password) {
+    errDiv.innerText = 'Please enter the administrator passcode.';
+    errDiv.style.display = 'block';
+    return;
+  }
+
+  errDiv.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/analytics/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.status === 'success' && data.token) {
+      setAdminToken(data.token);
+      document.getElementById('analytics-auth-view').style.display = 'none';
+      document.getElementById('analytics-dashboard-view').style.display = 'block';
+      loadAnalyticsDashboard();
+      showNotification("Authenticated", "Welcome to Visitor Intelligence Dashboard!");
+    } else {
+      errDiv.innerText = data.detail || 'Invalid admin passcode. Access denied.';
+      errDiv.style.display = 'block';
+    }
+  } catch (err) {
+    errDiv.innerText = 'Authentication server error. Please try again.';
+    errDiv.style.display = 'block';
+  }
+}
+
+function logoutAdminAuth() {
+  clearAdminToken();
+  document.getElementById('analytics-dashboard-view').style.display = 'none';
+  document.getElementById('analytics-auth-view').style.display = 'block';
+  const passInput = document.getElementById('admin-passcode-input');
+  if (passInput) passInput.value = '';
+  showNotification("Locked", "Logged out of Admin Analytics.");
 }
 
 async function loadAnalyticsDashboard() {
@@ -706,8 +786,29 @@ async function loadAnalyticsDashboard() {
   if (!container) return;
   container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">⏳ Loading real-time visitor analytics...</div>';
   
+  const token = getAdminToken();
+  if (!token) {
+    logoutAdminAuth();
+    return;
+  }
+
   try {
-    const res = await fetch('/api/analytics/summary');
+    const res = await fetch('/api/analytics/summary', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 401) {
+      logoutAdminAuth();
+      const errDiv = document.getElementById('admin-auth-error');
+      if (errDiv) {
+        errDiv.innerText = 'Session expired or unauthorized. Please re-authenticate.';
+        errDiv.style.display = 'block';
+      }
+      return;
+    }
+
     analyticsData = await res.json();
 
     // Update Top Key Metric Cards

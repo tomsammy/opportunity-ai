@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpportunityIQ | AI Intelligence Platform for Jobs, Scholarships & News</title>
-  <link rel="stylesheet" href="/static/styles.css?v=15">
+  <link rel="stylesheet" href="/static/styles.css?v=16">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -250,61 +250,90 @@
     </div>
   </div>
 
-  <!-- Visitor Intelligence & Analytics Dashboard Modal -->
+  <!-- Visitor Intelligence & Analytics Dashboard Modal (Protected by Admin Auth) -->
   <div id="analytics-modal" class="modal-overlay">
     <div class="modal-card" style="max-width:980px; width:95%; text-align:left;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:24px;">📊</span>
-          <div>
-            <h3 class="modal-title" style="margin:0;">Visitor Intelligence & Analytics</h3>
-            <div style="font-size:12px; color:var(--text-subtle);">Real-time visitor locations, devices, traffic sources & search metrics</div>
+      
+      <!-- 1. Admin Authentication Lock View -->
+      <div id="analytics-auth-view" style="text-align:center; padding:15px 0;">
+        <div style="font-size:48px; margin-bottom:12px;">🔒</div>
+        <h3 class="modal-title" style="margin-bottom:6px;">Administrator Authentication</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px; max-width:440px; margin-left:auto; margin-right:auto;">
+          Visitor metrics, IP geolocation logs, and search queries are protected. Please enter your administrator passcode to unlock the intelligence dashboard.
+        </p>
+        
+        <div style="max-width:360px; margin:0 auto;">
+          <input type="password" id="admin-passcode-input" class="chat-input" style="width:100%; text-align:center; letter-spacing:2px; font-size:15px;" placeholder="Enter Admin Passcode..." onkeyup="if(event.key==='Enter') submitAdminLogin()">
+          <div id="admin-auth-error" style="display:none; color:#ef4444; font-size:12px; margin-top:8px; text-align:center;"></div>
+          
+          <div style="display:flex; gap:10px; margin-top:20px;">
+            <button class="btn btn-secondary" style="flex:1; justify-content:center;" onclick="closeAnalyticsModal()">Cancel</button>
+            <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="submitAdminLogin()">🔓 Unlock Dashboard</button>
+          </div>
+
+          <div style="margin-top:16px; font-size:11px; color:var(--text-subtle);">
+            Default Passcode: <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; color:#a78bfa;">admin2026</code>
           </div>
         </div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button class="btn btn-secondary" style="padding:4px 10px; font-size:12px;" onclick="loadAnalyticsDashboard()">🔄 Refresh</button>
-          <button onclick="closeAnalyticsModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
-        </div>
       </div>
 
-      <!-- Top Analytics Metric Cards -->
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:20px;" id="analytics-stats-row">
-        <div class="stat-card" style="padding:14px; text-align:left;">
-          <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Total Visits</div>
-          <div style="font-size:24px; font-weight:800; color:#fff; margin:4px 0;" id="metric-pageviews">--</div>
-          <div style="font-size:11px; color:var(--accent-emerald);" id="metric-unique-sub">-- Unique Visitors</div>
+      <!-- 2. Protected Analytics Dashboard View -->
+      <div id="analytics-dashboard-view" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:24px;">📊</span>
+            <div>
+              <h3 class="modal-title" style="margin:0;">Visitor Intelligence & Analytics</h3>
+              <div style="font-size:12px; color:var(--text-subtle);">Real-time visitor locations, devices, traffic sources & search metrics</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button class="btn btn-secondary" style="padding:4px 10px; font-size:12px;" onclick="loadAnalyticsDashboard()">🔄 Refresh</button>
+            <button class="btn btn-secondary" style="padding:4px 10px; font-size:12px; border-color:rgba(239,68,68,0.3); color:#fca5a5;" onclick="logoutAdminAuth()">🔒 Lock</button>
+            <button onclick="closeAnalyticsModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
+          </div>
         </div>
-        <div class="stat-card" style="padding:14px; text-align:left;">
-          <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Top Country</div>
-          <div style="font-size:20px; font-weight:800; color:#a78bfa; margin:4px 0;" id="metric-top-country">--</div>
-          <div style="font-size:11px; color:var(--text-subtle);" id="metric-country-sub">Global Coverage</div>
+
+        <!-- Top Analytics Metric Cards -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:20px;" id="analytics-stats-row">
+          <div class="stat-card" style="padding:14px; text-align:left;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Total Visits</div>
+            <div style="font-size:24px; font-weight:800; color:#fff; margin:4px 0;" id="metric-pageviews">--</div>
+            <div style="font-size:11px; color:var(--accent-emerald);" id="metric-unique-sub">-- Unique Visitors</div>
+          </div>
+          <div class="stat-card" style="padding:14px; text-align:left;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Top Country</div>
+            <div style="font-size:20px; font-weight:800; color:#a78bfa; margin:4px 0;" id="metric-top-country">--</div>
+            <div style="font-size:11px; color:var(--text-subtle);" id="metric-country-sub">Global Coverage</div>
+          </div>
+          <div class="stat-card" style="padding:14px; text-align:left;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Device Split</div>
+            <div style="font-size:20px; font-weight:800; color:#34d399; margin:4px 0;" id="metric-device-split">--</div>
+            <div style="font-size:11px; color:var(--text-subtle);" id="metric-device-sub">Desktop vs Mobile</div>
+          </div>
+          <div class="stat-card" style="padding:14px; text-align:left;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Returning Ratio</div>
+            <div style="font-size:20px; font-weight:800; color:#60a5fa; margin:4px 0;" id="metric-returning">--</div>
+            <div style="font-size:11px; color:var(--text-subtle);" id="metric-returning-sub">Audience Retention</div>
+          </div>
         </div>
-        <div class="stat-card" style="padding:14px; text-align:left;">
-          <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Device Split</div>
-          <div style="font-size:20px; font-weight:800; color:#34d399; margin:4px 0;" id="metric-device-split">--</div>
-          <div style="font-size:11px; color:var(--text-subtle);" id="metric-device-sub">Desktop vs Mobile</div>
+
+        <!-- Navigation Tabs inside Analytics -->
+        <div style="display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border-card); padding-bottom:8px; flex-wrap:wrap;">
+          <button class="tab-btn active" id="tab-btn-geo" onclick="switchAnalyticsTab('geo', this)">🌍 Visitor Geographies</button>
+          <button class="tab-btn" id="tab-btn-tech" onclick="switchAnalyticsTab('tech', this)">📱 Devices & Referrers</button>
+          <button class="tab-btn" id="tab-btn-search" onclick="switchAnalyticsTab('search', this)">🔍 Searches & Interests</button>
+          <button class="tab-btn" id="tab-btn-live" onclick="switchAnalyticsTab('live', this)">⚡ Live Activity Stream</button>
         </div>
-        <div class="stat-card" style="padding:14px; text-align:left;">
-          <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Returning Ratio</div>
-          <div style="font-size:20px; font-weight:800; color:#60a5fa; margin:4px 0;" id="metric-returning">--</div>
-          <div style="font-size:11px; color:var(--text-subtle);" id="metric-returning-sub">Audience Retention</div>
+
+        <!-- Analytics Body Container -->
+        <div id="analytics-tab-content" style="max-height:50vh; overflow-y:auto; padding-right:4px;">
+          <!-- Dynamic Analytics Tab Data Inserted Here -->
         </div>
+
+        <button class="btn btn-primary" style="width:100%; margin-top:20px; justify-content:center;" onclick="closeAnalyticsModal()">Close Dashboard</button>
       </div>
 
-      <!-- Navigation Tabs inside Analytics -->
-      <div style="display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border-card); padding-bottom:8px; flex-wrap:wrap;">
-        <button class="tab-btn active" id="tab-btn-geo" onclick="switchAnalyticsTab('geo', this)">🌍 Visitor Geographies</button>
-        <button class="tab-btn" id="tab-btn-tech" onclick="switchAnalyticsTab('tech', this)">📱 Devices & Referrers</button>
-        <button class="tab-btn" id="tab-btn-search" onclick="switchAnalyticsTab('search', this)">🔍 Searches & Interests</button>
-        <button class="tab-btn" id="tab-btn-live" onclick="switchAnalyticsTab('live', this)">⚡ Live Activity Stream</button>
-      </div>
-
-      <!-- Analytics Body Container -->
-      <div id="analytics-tab-content" style="max-height:50vh; overflow-y:auto; padding-right:4px;">
-        <!-- Dynamic Analytics Tab Data Inserted Here -->
-      </div>
-
-      <button class="btn btn-primary" style="width:100%; margin-top:20px; justify-content:center;" onclick="closeAnalyticsModal()">Close Dashboard</button>
     </div>
   </div>
 
@@ -348,6 +377,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=15"></script>
+  <script src="/static/app.js?v=16"></script>
 </body>
 </html>

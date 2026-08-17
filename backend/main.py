@@ -11,7 +11,7 @@ from typing import Optional, List, Dict, Any
 from backend.config import DB_PATH, BASE_DIR
 from backend.scraper_engine import run_crawling_cycle
 from backend.rag_service import RAGService
-from backend.analytics import record_visitor_event, get_analytics_summary
+from backend.analytics import record_visitor_event, get_analytics_summary, verify_admin_token, generate_admin_token
 
 app = FastAPI(
     title="Opportunity & News AI Platform API",
@@ -190,9 +190,26 @@ def track_visitor_endpoint(payload: AnalyticsTrackRequest, request: Request):
     )
     return {"status": "success", "event": result}
 
+class AdminAuthRequest(BaseModel):
+    password: str
+
+@app.post("/api/analytics/auth")
+def admin_auth_endpoint(payload: AdminAuthRequest):
+    """Authenticates admin user and returns session access token for visitor metrics."""
+    token = generate_admin_token(payload.password)
+    if not token:
+        raise HTTPException(status_code=401, detail="Invalid admin passcode. Access denied.")
+    return {"status": "success", "token": token, "message": "Authentication successful!"}
+
 @app.get("/api/analytics/summary")
-def get_analytics_summary_endpoint():
-    """Returns comprehensive visitor intelligence and metrics dashboard data."""
+def get_analytics_summary_endpoint(request: Request):
+    """Returns comprehensive visitor intelligence and metrics data protected behind admin authentication."""
+    auth_header = request.headers.get("authorization") or request.headers.get("x-admin-key")
+    if not verify_admin_token(auth_header):
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized. Admin authentication required to access visitor metrics."
+        )
     return get_analytics_summary()
 
 class CVBuilderRequest(BaseModel):
