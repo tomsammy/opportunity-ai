@@ -1,16 +1,17 @@
 import os
 import json
 import logging
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 from backend.config import DB_PATH, BASE_DIR
 from backend.scraper_engine import run_crawling_cycle
 from backend.rag_service import RAGService
+from backend.analytics import record_visitor_event, get_analytics_summary
 
 app = FastAPI(
     title="Opportunity & News AI Platform API",
@@ -161,6 +162,38 @@ class ResumeUploadRequest(BaseModel):
 class ApplicationUpdateRequest(BaseModel):
     item_id: str
     status: str
+
+class AnalyticsTrackRequest(BaseModel):
+    visitor_id: str
+    event_type: str = "pageview"
+    client_tz: Optional[str] = None
+    referrer: Optional[str] = None
+    details: Optional[Dict[str, Any]] = None
+
+@app.post("/api/analytics/track")
+def track_visitor_endpoint(payload: AnalyticsTrackRequest, request: Request):
+    """Tracks visitor pageviews, searches, fit evaluations, and geolocation."""
+    forwarded = request.headers.get("x-forwarded-for")
+    client_ip = forwarded.split(",")[0].strip() if forwarded else (request.client.host if request.client else "127.0.0.1")
+    headers_dict = {k.lower(): v for k, v in request.headers.items()}
+    user_agent = request.headers.get("user-agent", "")
+
+    result = record_visitor_event(
+        visitor_id=payload.visitor_id,
+        event_type=payload.event_type,
+        ip=client_ip,
+        headers=headers_dict,
+        user_agent=user_agent,
+        client_tz=payload.client_tz,
+        referrer=payload.referrer,
+        details=payload.details
+    )
+    return {"status": "success", "event": result}
+
+@app.get("/api/analytics/summary")
+def get_analytics_summary_endpoint():
+    """Returns comprehensive visitor intelligence and metrics dashboard data."""
+    return get_analytics_summary()
 
 class CVBuilderRequest(BaseModel):
     item_id: Optional[str] = None

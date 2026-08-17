@@ -9,6 +9,7 @@ let opportunitiesData = [];
 document.addEventListener('DOMContentLoaded', () => {
   fetchStats();
   fetchOpportunities();
+  trackVisitorEvent('pageview');
 });
 
 async function fetchStats() {
@@ -124,6 +125,7 @@ function filterCategory(category, element) {
 function setSearch(term) {
   document.getElementById('search-input').value = term;
   fetchOpportunities();
+  trackVisitorEvent('search', { query: term });
 }
 
 let searchTimeout;
@@ -131,7 +133,11 @@ function handleSearch() {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => {
     fetchOpportunities();
-  }, 300);
+    const val = document.getElementById('search-input').value.trim();
+    if (val.length > 1) {
+      trackVisitorEvent('search', { query: val });
+    }
+  }, 400);
 }
 
 async function triggerCrawl() {
@@ -646,5 +652,244 @@ function downloadCVFormat(format = 'json') {
     a.click();
     a.remove();
     showNotification("JSON Downloaded", "Reactive Resume JSON schema downloaded!");
+  }
+}
+
+/* =========================================================
+   Visitor Analytics & Metrics Intelligence Suite
+   ========================================================= */
+function getOrCreateVisitorId() {
+  let vid = localStorage.getItem('opp_visitor_id');
+  if (!vid) {
+    vid = 'v_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+    localStorage.setItem('opp_visitor_id', vid);
+  }
+  return vid;
+}
+
+async function trackVisitorEvent(eventType, details = {}) {
+  try {
+    const vid = getOrCreateVisitorId();
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    const ref = document.referrer || '';
+    
+    await fetch('/api/analytics/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitor_id: vid,
+        event_type: eventType,
+        client_tz: tz,
+        referrer: ref,
+        details: details
+      })
+    });
+  } catch (e) {
+    // Silent fail for uninterrupted UX
+  }
+}
+
+let analyticsData = null;
+let currentAnalyticsTab = 'geo';
+
+function openAnalyticsModal() {
+  document.getElementById('analytics-modal').classList.add('open');
+  loadAnalyticsDashboard();
+}
+
+function closeAnalyticsModal() {
+  document.getElementById('analytics-modal').classList.remove('open');
+}
+
+async function loadAnalyticsDashboard() {
+  const container = document.getElementById('analytics-tab-content');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">⏳ Loading real-time visitor analytics...</div>';
+  
+  try {
+    const res = await fetch('/api/analytics/summary');
+    analyticsData = await res.json();
+
+    // Update Top Key Metric Cards
+    const totalViews = analyticsData.total_pageviews || 0;
+    const unique = analyticsData.unique_visitors || 1;
+    
+    document.getElementById('metric-pageviews').innerText = totalViews.toLocaleString();
+    document.getElementById('metric-unique-sub').innerText = `${unique.toLocaleString()} Unique Visitors`;
+    
+    const topCountry = (analyticsData.top_countries && analyticsData.top_countries[0]) ? analyticsData.top_countries[0] : null;
+    if (topCountry) {
+      document.getElementById('metric-top-country').innerText = `${topCountry.flag} ${topCountry.name}`;
+      const pct = Math.round((topCountry.count / unique) * 100);
+      document.getElementById('metric-country-sub').innerText = `${topCountry.count} visitors (${pct}%)`;
+    } else {
+      document.getElementById('metric-top-country').innerText = '🌐 Global';
+    }
+
+    const desktop = analyticsData.device_breakdown?.Desktop || 0;
+    const mobile = (analyticsData.device_breakdown?.Mobile || 0) + (analyticsData.device_breakdown?.Tablet || 0);
+    const totalDev = (desktop + mobile) || 1;
+    document.getElementById('metric-device-split').innerText = `${Math.round((desktop / totalDev) * 100)}% / ${Math.round((mobile / totalDev) * 100)}%`;
+    document.getElementById('metric-device-sub').innerText = `${desktop} Desktop • ${mobile} Mobile`;
+
+    const returning = analyticsData.returning_visitors || 0;
+    document.getElementById('metric-returning').innerText = `${Math.round((returning / unique) * 100)}%`;
+    document.getElementById('metric-returning-sub').innerText = `${returning} Returning • ${analyticsData.new_visitors || 0} New`;
+
+    renderAnalyticsTabContent();
+  } catch (err) {
+    container.innerHTML = '<div style="color:#ef4444; padding:20px; text-align:center;">Failed to load analytics data from server.</div>';
+  }
+}
+
+function switchAnalyticsTab(tabName, btnEl) {
+  currentAnalyticsTab = tabName;
+  document.querySelectorAll('#analytics-modal .tab-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  renderAnalyticsTabContent();
+}
+
+function renderAnalyticsTabContent() {
+  if (!analyticsData) return;
+  const container = document.getElementById('analytics-tab-content');
+  const unique = analyticsData.unique_visitors || 1;
+
+  if (currentAnalyticsTab === 'geo') {
+    const countries = analyticsData.top_countries || [];
+    let countriesHTML = countries.map(c => {
+      const pct = Math.round((c.count / unique) * 100);
+      return `
+        <div class="metric-row">
+          <div style="width:140px; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:18px;">${c.flag}</span>
+            <span style="font-weight:600; color:#fff;">${c.name}</span>
+          </div>
+          <div class="metric-bar-container">
+            <div class="metric-bar-fill" style="width:${Math.max(6, pct)}%;"></div>
+          </div>
+          <div style="width:80px; text-align:right; font-weight:700; color:var(--accent-emerald);">
+            ${c.count} <span style="font-size:11px; color:var(--text-subtle); font-weight:400;">(${pct}%)</span>
+          </div>
+        </div>
+      `;
+    }).join('') || '<div style="color:var(--text-muted); padding:10px;">No geographic visitor data yet.</div>';
+
+    container.innerHTML = `
+      <div class="analytics-grid-2col">
+        <div class="analytics-card-section">
+          <div class="analytics-section-title">
+            <span>🌍 Top Visitor Geographies</span>
+            <span style="font-size:11px; color:var(--text-subtle);">By Country / Region</span>
+          </div>
+          ${countriesHTML}
+        </div>
+        <div class="analytics-card-section">
+          <div class="analytics-section-title">
+            <span>🔗 Inbound Traffic & Referrers</span>
+            <span style="font-size:11px; color:var(--text-subtle);">Acquisition Channels</span>
+          </div>
+          ${(analyticsData.top_referrers || []).map(r => `
+            <div class="metric-row">
+              <span style="color:#fff; font-weight:500;">${r.source}</span>
+              <span style="font-weight:700; color:#60a5fa;">${r.count} visits</span>
+            </div>
+          `).join('') || '<div style="color:var(--text-muted); padding:10px;">Direct traffic</div>'}
+        </div>
+      </div>
+    `;
+  } else if (currentAnalyticsTab === 'tech') {
+    container.innerHTML = `
+      <div class="analytics-grid-2col">
+        <div class="analytics-card-section">
+          <div class="analytics-section-title">📱 Devices & Platforms</div>
+          ${Object.entries(analyticsData.device_breakdown || {}).map(([dev, count]) => `
+            <div class="metric-row">
+              <span style="color:#fff; font-weight:500;">${dev === 'Desktop' ? '💻' : '📱'} ${dev}</span>
+              <span style="font-weight:700; color:#34d399;">${count} users</span>
+            </div>
+          `).join('')}
+          <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
+            <div class="analytics-section-title" style="margin-bottom:8px;">💻 Operating Systems</div>
+            ${Object.entries(analyticsData.os_breakdown || {}).map(([os, count]) => `
+              <div class="metric-row">
+                <span style="color:var(--text-muted);">${os}</span>
+                <span style="font-weight:600; color:#fff;">${count}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="analytics-card-section">
+          <div class="analytics-section-title">🌐 Web Browsers</div>
+          ${Object.entries(analyticsData.browser_breakdown || {}).map(([br, count]) => `
+            <div class="metric-row">
+              <span style="color:#fff; font-weight:500;">${br}</span>
+              <span style="font-weight:700; color:#a78bfa;">${count} users</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else if (currentAnalyticsTab === 'search') {
+    const searches = analyticsData.top_searches || [];
+    const opps = analyticsData.top_opportunities || [];
+    container.innerHTML = `
+      <div class="analytics-grid-2col">
+        <div class="analytics-card-section">
+          <div class="analytics-section-title">
+            <span>🔍 Most Searched Terms</span>
+            <span style="font-size:11px; color:var(--text-subtle);">Visitor Queries</span>
+          </div>
+          ${searches.map(s => `
+            <div class="metric-row">
+              <span style="color:#fff; font-weight:500;">"${s.query}"</span>
+              <span style="font-weight:700; color:var(--accent-emerald);">${s.count} searches</span>
+            </div>
+          `).join('') || '<div style="color:var(--text-muted); padding:10px;">No search queries recorded yet.</div>'}
+        </div>
+        <div class="analytics-card-section">
+          <div class="analytics-section-title">
+            <span>🎯 High-Engagement Opportunities</span>
+            <span style="font-size:11px; color:var(--text-subtle);">Views & Fits</span>
+          </div>
+          ${opps.map(o => `
+            <div class="metric-row">
+              <span style="color:#fff; font-size:12px; max-width:70%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${o.title}</span>
+              <span style="font-weight:700; color:#60a5fa;">${o.count} views</span>
+            </div>
+          `).join('') || '<div style="color:var(--text-muted); padding:10px;">No opportunity views recorded yet.</div>'}
+        </div>
+      </div>
+    `;
+  } else if (currentAnalyticsTab === 'live') {
+    const feed = analyticsData.live_feed || [];
+    container.innerHTML = `
+      <div class="analytics-card-section">
+        <div class="analytics-section-title">
+          <span>⚡ Live Visitor Activity Stream (Real-Time)</span>
+          <span style="font-size:11px; color:var(--accent-emerald);">● Streaming Live</span>
+        </div>
+        ${feed.map(item => `
+          <div class="live-stream-item">
+            <span style="font-size:18px;">${item.flag}</span>
+            <div style="flex:1;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+                <span style="font-weight:700; color:#fff; font-size:13px;">${item.location}</span>
+                <span style="color:var(--text-subtle); font-size:11px;">${item.timestamp}</span>
+              </div>
+              <div style="color:var(--accent-emerald); font-weight:600; font-size:12px; margin-bottom:2px;">
+                ${item.action}
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; color:var(--text-subtle); font-size:11px;">
+                <span>${item.device}</span>
+                <span>•</span>
+                <span>${item.browser}</span>
+                <span>•</span>
+                <span class="live-stream-badge">${item.referrer}</span>
+              </div>
+            </div>
+          </div>
+        `).join('') || '<div style="color:var(--text-muted); padding:20px; text-align:center;">No recent events recorded.</div>'}
+      </div>
+    `;
   }
 }

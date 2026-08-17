@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpportunityIQ | AI Intelligence Platform for Jobs, Scholarships & News</title>
-  <link rel="stylesheet" href="/static/styles.css?v=14">
+  <link rel="stylesheet" href="/static/styles.css?v=15">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,6 +27,9 @@
         </button>
         <button class="btn btn-secondary" onclick="openTrackerModal()">
           <span>📌 Application Tracker</span>
+        </button>
+        <button class="btn btn-secondary" onclick="openAnalyticsModal()">
+          <span>📊 Visitor Metrics</span>
         </button>
         <button class="btn btn-secondary" id="btn-crawl" onclick="triggerCrawl()">
           <span>🔄 Sync & Crawl Web</span>
@@ -247,6 +250,64 @@
     </div>
   </div>
 
+  <!-- Visitor Intelligence & Analytics Dashboard Modal -->
+  <div id="analytics-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width:980px; width:95%; text-align:left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">📊</span>
+          <div>
+            <h3 class="modal-title" style="margin:0;">Visitor Intelligence & Analytics</h3>
+            <div style="font-size:12px; color:var(--text-subtle);">Real-time visitor locations, devices, traffic sources & search metrics</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="btn btn-secondary" style="padding:4px 10px; font-size:12px;" onclick="loadAnalyticsDashboard()">🔄 Refresh</button>
+          <button onclick="closeAnalyticsModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">✕</button>
+        </div>
+      </div>
+
+      <!-- Top Analytics Metric Cards -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:20px;" id="analytics-stats-row">
+        <div class="stat-card" style="padding:14px; text-align:left;">
+          <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Total Visits</div>
+          <div style="font-size:24px; font-weight:800; color:#fff; margin:4px 0;" id="metric-pageviews">--</div>
+          <div style="font-size:11px; color:var(--accent-emerald);" id="metric-unique-sub">-- Unique Visitors</div>
+        </div>
+        <div class="stat-card" style="padding:14px; text-align:left;">
+          <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Top Country</div>
+          <div style="font-size:20px; font-weight:800; color:#a78bfa; margin:4px 0;" id="metric-top-country">--</div>
+          <div style="font-size:11px; color:var(--text-subtle);" id="metric-country-sub">Global Coverage</div>
+        </div>
+        <div class="stat-card" style="padding:14px; text-align:left;">
+          <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Device Split</div>
+          <div style="font-size:20px; font-weight:800; color:#34d399; margin:4px 0;" id="metric-device-split">--</div>
+          <div style="font-size:11px; color:var(--text-subtle);" id="metric-device-sub">Desktop vs Mobile</div>
+        </div>
+        <div class="stat-card" style="padding:14px; text-align:left;">
+          <div style="font-size:11px; font-weight:700; color:var(--text-subtle); text-transform:uppercase;">Returning Ratio</div>
+          <div style="font-size:20px; font-weight:800; color:#60a5fa; margin:4px 0;" id="metric-returning">--</div>
+          <div style="font-size:11px; color:var(--text-subtle);" id="metric-returning-sub">Audience Retention</div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs inside Analytics -->
+      <div style="display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border-card); padding-bottom:8px; flex-wrap:wrap;">
+        <button class="tab-btn active" id="tab-btn-geo" onclick="switchAnalyticsTab('geo', this)">🌍 Visitor Geographies</button>
+        <button class="tab-btn" id="tab-btn-tech" onclick="switchAnalyticsTab('tech', this)">📱 Devices & Referrers</button>
+        <button class="tab-btn" id="tab-btn-search" onclick="switchAnalyticsTab('search', this)">🔍 Searches & Interests</button>
+        <button class="tab-btn" id="tab-btn-live" onclick="switchAnalyticsTab('live', this)">⚡ Live Activity Stream</button>
+      </div>
+
+      <!-- Analytics Body Container -->
+      <div id="analytics-tab-content" style="max-height:50vh; overflow-y:auto; padding-right:4px;">
+        <!-- Dynamic Analytics Tab Data Inserted Here -->
+      </div>
+
+      <button class="btn btn-primary" style="width:100%; margin-top:20px; justify-content:center;" onclick="closeAnalyticsModal()">Close Dashboard</button>
+    </div>
+  </div>
+
   <!-- AI Fit & Cover Letter Modal Overlay -->
   <div id="fit-modal" class="modal-overlay">
     <div class="modal-card" style="max-width:580px; text-align:left;">
@@ -287,6 +348,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=14"></script>
+  <script src="/static/app.js?v=15"></script>
 </body>
 </html>
