@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpportunityIQ | AI Intelligence Platform for Jobs, Scholarships & News</title>
-  <link rel="stylesheet" href="/static/styles.css?v=16">
+  <link rel="stylesheet" href="/static/styles.css?v=17">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,11 +13,13 @@
 
   <!-- Navigation Bar -->
   <header class="navbar">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    <div class="container navbar-inner">
       <div class="brand">
         <div class="brand-icon">IQ</div>
-        <div class="brand-title">OpportunityIQ <span style="font-size:12px; color:var(--accent-emerald); border:1px solid rgba(16,185,129,0.3); padding:2px 8px; border-radius:100px; margin-left:6px;">LIVE RAG</span></div>
+        <div class="brand-title">OpportunityIQ <span class="badge-live-rag">LIVE RAG</span></div>
       </div>
+      
+      <!-- Desktop Navigation Actions -->
       <div class="nav-actions">
         <button class="btn btn-secondary" onclick="openProfileModal()">
           <span>📄 Candidate Profile</span>
@@ -32,14 +34,88 @@
           <span>📊 Visitor Metrics</span>
         </button>
         <button class="btn btn-secondary" id="btn-crawl" onclick="triggerCrawl()">
-          <span>🔄 Sync & Crawl Web</span>
+          <span>🔄 Sync & Crawl</span>
         </button>
         <button class="btn btn-primary" onclick="toggleChatDrawer()">
-          <span>✨ AI Opportunity Copilot</span>
+          <span>✨ AI Copilot</span>
+        </button>
+      </div>
+
+      <!-- Mobile Quick Action & Hamburger Toggle -->
+      <div class="mobile-nav-toggle-wrap">
+        <button class="btn btn-primary btn-mobile-copilot" onclick="toggleChatDrawer()" title="AI Opportunity Copilot">
+          <span>✨ Copilot</span>
+        </button>
+        <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
       </div>
     </div>
   </header>
+
+  <!-- Mobile Navigation Drawer (Clean Slide-Over Sheet) -->
+  <div id="mobile-menu-drawer" class="mobile-menu-overlay" onclick="handleMobileBackdropClick(event)">
+    <div class="mobile-menu-sheet">
+      <div class="mobile-menu-header">
+        <div class="brand">
+          <div class="brand-icon">IQ</div>
+          <div class="brand-title">OpportunityIQ</div>
+        </div>
+        <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Close Menu">✕</button>
+      </div>
+
+      <div class="mobile-menu-links">
+        <button class="mobile-nav-item" onclick="mobileNavAction(openProfileModal)">
+          <span class="mobile-nav-icon">📄</span>
+          <div class="mobile-nav-text">
+            <strong>Candidate Profile</strong>
+            <small>Manage skills, resume & target roles</small>
+          </div>
+        </button>
+        <button class="mobile-nav-item" onclick="mobileNavAction(openCVBuilderModal)">
+          <span class="mobile-nav-icon">🎨</span>
+          <div class="mobile-nav-text">
+            <strong>Reactive CV Builder</strong>
+            <small>Generate ATS-optimized CVs & templates</small>
+          </div>
+        </button>
+        <button class="mobile-nav-item" onclick="mobileNavAction(openTrackerModal)">
+          <span class="mobile-nav-icon">📌</span>
+          <div class="mobile-nav-text">
+            <strong>Application Tracker</strong>
+            <small>Kanban board for saved & applied roles</small>
+          </div>
+        </button>
+        <button class="mobile-nav-item" onclick="mobileNavAction(openAnalyticsModal)">
+          <span class="mobile-nav-icon">📊</span>
+          <div class="mobile-nav-text">
+            <strong>Visitor Metrics</strong>
+            <small>Protected admin analytics & stats</small>
+          </div>
+        </button>
+        <button class="mobile-nav-item" onclick="mobileNavAction(triggerCrawl)">
+          <span class="mobile-nav-icon">🔄</span>
+          <div class="mobile-nav-text">
+            <strong>Sync & Crawl Web</strong>
+            <small>Fetch latest live opportunities</small>
+          </div>
+        </button>
+        <button class="mobile-nav-item mobile-nav-item-primary" onclick="mobileNavAction(toggleChatDrawer)">
+          <span class="mobile-nav-icon">✨</span>
+          <div class="mobile-nav-text">
+            <strong>AI Opportunity Copilot</strong>
+            <small>Interactive RAG Assistant</small>
+          </div>
+        </button>
+      </div>
+
+      <div class="mobile-menu-footer">
+        <span>⚡ Real-Time RAG Intelligence Engine</span>
+      </div>
+    </div>
+  </div>
 
   <!-- Ultra-Clean Hero Landing Section -->
   <main class="container">
@@ -58,13 +134,13 @@
       <div class="search-container">
         <span class="search-icon">🔍</span>
         <input type="text" id="search-input" class="search-input" placeholder="Search by keyword, country, degree level, or tender (e.g. Canada, UK Visa, Germany, PhD, Remote, Startup)..." onkeyup="handleSearch()">
-        <div style="display:flex; justify-content:center; gap:8px; margin-top:14px; flex-wrap:wrap;">
-          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Scout')">🔥 Stealth & Rare</span>
-          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Japa')">✈️ Japa & Visas</span>
-          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Canada')">🇨🇦 Canada</span>
-          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('UK')">🇬🇧 UK Visas</span>
-          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Scholarship')">🎓 Scholarships</span>
-          <span class="tab-btn" style="padding:5px 14px; font-size:12px; cursor:pointer;" onclick="setSearch('Remote')">💼 Remote Roles</span>
+        <div class="tab-scroll-container search-chips-row">
+          <span class="tab-btn" onclick="setSearch('Scout')">🔥 Stealth & Rare</span>
+          <span class="tab-btn" onclick="setSearch('Japa')">✈️ Japa & Visas</span>
+          <span class="tab-btn" onclick="setSearch('Canada')">🇨🇦 Canada</span>
+          <span class="tab-btn" onclick="setSearch('UK')">🇬🇧 UK Visas</span>
+          <span class="tab-btn" onclick="setSearch('Scholarship')">🎓 Scholarships</span>
+          <span class="tab-btn" onclick="setSearch('Remote')">💼 Remote Roles</span>
         </div>
       </div>
     </section>
@@ -92,8 +168,8 @@
       </div>
 
       <!-- Target Audience Tabs -->
-      <div style="margin-bottom:16px; text-align:center;">
-        <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+      <div style="margin-bottom:14px; text-align:center;">
+        <div class="tab-scroll-container audience-tabs-row">
           <button class="tab-btn active" onclick="filterSegment('All', this)">🌐 All Profiles</button>
           <button class="tab-btn" onclick="filterSegment('Student', this)">🎓 Students</button>
           <button class="tab-btn" onclick="filterSegment('JobSeeker', this)">💼 Job Seekers</button>
@@ -104,7 +180,7 @@
       </div>
 
       <!-- 8 Category Filter Tabs -->
-      <div class="category-tabs" style="margin-bottom:28px;">
+      <div class="category-tabs tab-scroll-container" style="margin-bottom:24px;">
         <button class="tab-btn active" onclick="filterCategory('All', this)">🌐 All Categories</button>
         <button class="tab-btn" onclick="filterCategory('Job', this)">💼 Jobs</button>
         <button class="tab-btn" onclick="filterCategory('Scholarship', this)">🎓 Scholarships</button>
@@ -377,6 +453,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=16"></script>
+  <script src="/static/app.js?v=17"></script>
 </body>
 </html>

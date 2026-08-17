@@ -994,3 +994,45 @@ function renderAnalyticsTabContent() {
     `;
   }
 }
+
+/* =========================================================
+   Mobile Hamburger Menu Navigation Handlers
+   ========================================================= */
+function toggleMobileMenu() {
+  const drawer = document.getElementById('mobile-menu-drawer');
+  const btn = document.getElementById('hamburger-btn');
+  if (!drawer) return;
+  
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    closeMobileMenu();
+  } else {
+    drawer.classList.add('open');
+    if (btn) btn.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeMobileMenu() {
+  const drawer = document.getElementById('mobile-menu-drawer');
+  const btn = document.getElementById('hamburger-btn');
+  if (drawer) drawer.classList.remove('open');
+  if (btn) btn.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function handleMobileBackdropClick(e) {
+  if (e.target && e.target.id === 'mobile-menu-drawer') {
+    closeMobileMenu();
+  }
+}
+
+function mobileNavAction(callback) {
+  closeMobileMenu();
+  setTimeout(() => {
+    if (typeof callback === 'function') {
+      callback();
+    }
+  }, 200);
+}
+
