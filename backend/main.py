@@ -62,6 +62,15 @@ def save_data():
 def startup_event():
     load_data()
 
+@app.get("/api/health")
+def health_check():
+    """Lightweight health check endpoint for automated pingers and uptime monitors."""
+    return {
+        "status": "healthy",
+        "service": "OpportunityIQ RAG Platform",
+        "opportunities_count": len(opportunities_cache)
+    }
+
 @app.get("/api/opportunities")
 def get_opportunities(
     category: Optional[str] = None,

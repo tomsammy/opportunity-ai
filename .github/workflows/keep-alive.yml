@@ -1,0 +1,17 @@
+name: Keep Render App Alive
+
+on:
+  schedule:
+    # Runs every 10 minutes (cron syntax)
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping OpportunityIQ App Health Endpoint
+        run: |
+          echo "Sending keep-alive ping to Render application..."
+          curl -s -f -m 30 https://opportunity-ai-kn1i.onrender.com/api/health || curl -s -f -m 30 https://opportunity-ai-kn1i.onrender.com/
+          echo "Keep-alive ping sent successfully!"
