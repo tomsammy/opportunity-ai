@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
 from backend.config import DB_PATH, BASE_DIR
-from backend.scraper_engine import run_crawling_cycle
+from backend.scraper_engine import run_crawling_cycle, INITIAL_SEED_OPPORTUNITIES
 from backend.rag_service import RAGService
 from backend.analytics import record_visitor_event, get_analytics_summary, verify_admin_token, generate_admin_token
 
@@ -40,6 +40,15 @@ def load_data():
         except Exception as e:
             logging.error(f"Error loading DB: {e}")
             opportunities_cache = []
+
+    if not opportunities_cache:
+        opportunities_cache = list(INITIAL_SEED_OPPORTUNITIES)
+    else:
+        # Ensure seed & anchor diplomatic items are present
+        existing_ids = {item.get("id") for item in opportunities_cache}
+        for seed in INITIAL_SEED_OPPORTUNITIES:
+            if seed.get("id") not in existing_ids:
+                opportunities_cache.insert(0, seed)
 
     # Completely purge any WhatsApp items
     opportunities_cache = [item for item in opportunities_cache if not is_whatsapp_item(item)]

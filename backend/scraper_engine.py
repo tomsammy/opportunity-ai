@@ -7,11 +7,12 @@ from backend.extractor import extract_metadata_from_content
 from backend.scout_engine import fetch_scout_rare_opportunities
 from backend.scout_youtube_crawler import crawl_youtube_opportunity_feeds
 from backend.scout_multiplatform import crawl_all_8_scout_platforms
+from backend.diplomatic_fellowship_engine import crawl_diplomatic_and_fellowship_opportunities, DIPLOMATIC_FELLOWSHIP_ANCHORS
 
 logging.basicConfig(level=logging.INFO)
 
 # Verified High-Value Seed Data for Instant Display
-INITIAL_SEED_OPPORTUNITIES = [
+INITIAL_SEED_OPPORTUNITIES = list(DIPLOMATIC_FELLOWSHIP_ANCHORS) + [
     {
         "id": "opp-001",
         "title": "DAAD Helmut-Schmidt-Programme Master's Scholarships for Public Policy 2026/2027",
@@ -223,6 +224,11 @@ def run_crawling_cycle() -> list:
     logging.info("Scouting Multi-Platform Opportunities across all 8 Scout platforms...")
     multi_items = crawl_all_8_scout_platforms()
     crawled_data.extend(multi_items)
+
+    # 0d. Fetch FCDO, Cabinet Office, White House, and International Fellowship APIs
+    logging.info("Crawling FCDO, Cabinet Office, GOV.UK API and International Fellowship feeds...")
+    diplo_items = crawl_diplomatic_and_fellowship_opportunities()
+    crawled_data.extend(diplo_items)
     
     # 1. Fetch Live Remote Jobs (Remotive API + Arbeitnow API)
     logging.info("Crawling Remotive & Arbeitnow Job APIs...")
